@@ -142,9 +142,10 @@ response.setDateHeader("EXPIRES"  , 0         );
               <tr height='100%'>
                 <td class="<gts:track section='content.class.cell'/>">
                     <gts:track section="content.body"/>
-                    <% String includePage = (String) request.getAttribute("template"); %>
-                    <jsp:include page="AccountLogin.jsp"/>
+                    <% String includePage = (String) request.getAttribute("template"); 
+                       if(includePage!=null){%>
                     <jsp:include page="<%= includePage %>"/>
+                    <% }%>
                 </td>
               </tr>
               <tr>
