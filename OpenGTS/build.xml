@@ -62,9 +62,7 @@ File     : build.xml
     </fileset>
   </path>
 
-  <!-- Tomcat 8? : ${Env.CATALINA_HOME}/lib/servlet-api.jar -->
-  <available classname="javax.servlet.WriteListener" classpathref="tomcat.classpath" property="exists.tomcat8"/>
-
+  
   <!-- ======================================================================== -->
   <!-- ======================================================================== -->
 
@@ -941,12 +939,12 @@ File     : build.xml
   </target>
 
   <!-- Target: track.deploy -->
-  <target name="track.deploy" depends="track.war" 
+  <target name="track.deploy" 
     description="Deploy 'track.war' to Tomcat">
     <echo message="Deploying 'track.war' to ${catalina.base}/webapps/${track.deployWar}"/>
     <copy 
         file="${build.home}/track.war" 
-        tofile="${catalina.base}/webapps/${track.deployWar}"
+        todir="${basedir}/server/webapps"
         overwrite="true"
         failonerror="true"
         verbose="true"
@@ -1241,7 +1239,7 @@ File     : build.xml
   <!-- Target: events.deploy -->
   <target name="events.deploy" depends="events.war" 
     description="Deploy 'events.war' to Tomcat">
-    <echo message="Deploying 'events.war' to ${catalina.base}/webapps/${events.deployWar}"/>
+   
     <copy 
         file="${build.home}/events.war" 
         tofile="${catalina.base}/webapps/${events.deployWar}"
@@ -1249,7 +1247,7 @@ File     : build.xml
         failonerror="true" 
         verbose="true"
         />
-    <echo message="Deployed ${catalina.base}/webapps/${events.deployWar}"/>
+    <echo message="Deployed "/>
   </target>
 
   <!-- ======================================================================== -->

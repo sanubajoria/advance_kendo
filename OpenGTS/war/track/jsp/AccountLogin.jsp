@@ -16,7 +16,7 @@ angular.module('jittrack', [])
         <td class="{{cssLoginText}}">
           <span style='font-size:11pt'>{{enterLoginText}}</span>
           <hr style='height: 5px;' ng-if="HR" />
-          <form name={{form.name}} method='post' action={{form.baseURL}} target={{loginForm.target}}>
+          <form name={{form.name}} method='post' action={{form.action}} target={{form.target}}>
             <table class={{cssLoginFormTable}} cellpadding='0' cellspacing='0' border='0'>
               <tr ng-repeat="f in form.fields">
                 <td class='accountLoginFieldLabel' ng-if="f.type == 'text' || f.type == 'password' || (f.type == 'combobox' && f.editable != null)">{{f.label}}</td>
