@@ -10,3 +10,5 @@ build/
 OpenGTS/server/
 OpenGTS/build/
 
+OpenGTS/src/org/opengts/CompileTime.java
+OpenGTS/.externalToolBuilders/OpenGTS_Builder.launch
