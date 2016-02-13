@@ -57,6 +57,7 @@ response.setDateHeader("EXPIRES"  , 0         );
   <link rel='stylesheet' type='text/css' href='custom/MenuBar.css'/>
   <link rel='stylesheet' type='text/css' href='custom/Controls.css'/>
 
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
   <!-- javascript -->
   <gts:track section="javascript"/>
 
@@ -141,6 +142,9 @@ response.setDateHeader("EXPIRES"  , 0         );
               <tr height='100%'>
                 <td class="<gts:track section='content.class.cell'/>">
                     <gts:track section="content.body"/>
+                    <% String includePage = (String) request.getAttribute("template"); %>
+                    <jsp:include page="AccountLogin.jsp"/>
+                    <jsp:include page="<%= includePage %>"/>
                 </td>
               </tr>
               <tr>

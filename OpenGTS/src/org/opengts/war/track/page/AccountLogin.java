@@ -503,6 +503,9 @@ public class AccountLogin
                     out.write("}\n");
                     out.write("</script>\n");
                 }
+                
+                req.setAttribute("template", "AccountLogin.jsp");
+                req.setAttribute("data", "{\"cssLoginText\":\"accountLoginTextCell\",\"enterLoginText\":\"Enter your Login ID and Password\",\"cssLoginContent\":\"accountLoginContentTable\",\"form\":{\"name\":\"Login\",\"focusFieldID\":\"accountLoginField\",\"target\":\"_self\",\"action\":\"./Track\",\"class\":\"accountLoginFormTable\",\"fields\":[{\"id\":\"accountLoginField\",\"ro\":\"\",\"maxlength\":\"32\",\"name\":\"account\",\"value\":\"\",\"class\":\"textInput\",\"label\":\"Account:\",\"type\":\"text\",\"size\":\"24\"},{\"id\":\"userLoginField\",\"ro\":\"\",\"maxlength\":\"32\",\"name\":\"user\",\"value\":\"\",\"class\":\"textInput\",\"label\":\"User:\",\"type\":\"text\",\"size\":\"24\"},{\"id\":\"\",\"ro\":\"\",\"maxlength\":\"32\",\"name\":\"user\",\"value\":\"\",\"class\":\"textInput\",\"label\":\"Password:\",\"type\":\"password\",\"size\":\"24\"},{\"id\":\"locale\",\"ro\":\"\",\"class\":\"adminComboBox\",\"label\":\"Language:\",\"type\":\"combobox\",\"option\":{\"en\":\"English\",\"fr\":\"French\",\"de\":\"German\",\"el\":\"Greek\",\"hu\":\"Hungarian\",\"it\":\"Italian\",\"nl\":\"Dutch\",\"pl\":\"Polish\",\"pt\":\"Portuguese\",\"ro\":\"Romanian\",\"ru\":\"Russian\",\"sk\":\"Slovak\",\"sr\":\"Serbian\",\"es\":\"Spanish\",\"tr\":\"Turkish\"}},{\"name\":\"submit\",\"value\":\"Login\",\"class\":\"adminComboBox\",\"type\":\"submit\"}]},\"HR\":\"<hr style='height: 5px;'/>\"    }");
 
                 
             }
