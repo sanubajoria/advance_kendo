@@ -203,7 +203,6 @@ public class AccountLogin
         }
     }
 
-    // ------------------------------------------------------------------------
 
     public void writePage(
         final RequestProperties reqState,
@@ -262,77 +261,40 @@ public class AccountLogin
                 //      <input type="submit" name="submit" value="Login">
                 //  </form>
                 String cssLoginContent = borderedCss? CSS_LOGIN_CONTENT_CENTER : CSS_LOGIN_CONTENT_LEFT;
-                HashMap<String , Object > base = new HashMap<String ,Object>();
-                base.put("cssLoginContent", cssLoginContent);
-                
                 out.println("<table class='"+cssLoginContent+"' width='100%' cellpadding='0' cellspacing='0' border='0'>");
                 out.println("<tr>");
                 
                 String vsepImg = legacy? null : AccountLogin.this.getProperties().getString(PROP_VSeparatorImage,null);
                 if (!StringTools.isBlank(vsepImg)) {
-                   HashMap<String , String> vsepMap= new HashMap<String , String>();
-                   
-                   base.put("vsepImg", vsepMap);
                     String W = AccountLogin.this.getProperties().getString(PROP_VSeparatorImage_W,null);
                     String H = AccountLogin.this.getProperties().getString(PROP_VSeparatorImage_H,null);
                     out.print("<td class='"+CSS_LOGIN_VSEP_CELL+"'>");
                     out.print("<img ");
-                    if (!StringTools.isBlank(W)) { out.print(" width='"+W+"'");  vsepMap.put("W", W) ; }
-                    if (!StringTools.isBlank(H)) { out.print(" height='"+H+"'"); vsepMap.put("H", H) ;}
-                    vsepMap.put("src", vsepImg);
+                    if (!StringTools.isBlank(W)) { out.print(" width='"+W+"'"); }
+                    if (!StringTools.isBlank(H)) { out.print(" height='"+H+"'"); }
                     out.print(" src='"+vsepImg+"'/>");
                     out.print("</td>");
                 }
 
                 String cssLoginText = borderedCss? CSS_LOGIN_TEXT_CELL_CENTER : CSS_LOGIN_TEXT_CELL_LEFT;
-                base.put("cssLoginText", cssLoginText);
                 out.println("<td class='"+cssLoginText+"'>");
                 String enterLoginText = showPasswd?
                     i18n.getString("AccountLogin.enterLogin","Enter your Login ID and Password") :
                     i18n.getString("AccountLogin.enterLoginNoPass","Enter Login ID (No Password Required)");
-                base.put("enterLoginText", enterLoginText);
                 out.println("<span style='font-size:11pt'>"+enterLoginText+"</span>");
-                base.put("HR", HR);
                 out.println(HR);
-                HashMap<String,Object> form = new HashMap<String,Object>();
-                base.put("form", form);
                 //out.println("<center>"); // necessary because "text-align:center" doesn't center the following form/table
                 out.println("<form name='"+FORM_LOGIN+"' method='post' action='"+baseURL+"' target='"+target+"'>");
-                form.put("name", FORM_LOGIN);
-                form.put("action", baseURL);
-                form.put("target", target);
                 String cssLoginFormTable = borderedCss? CSS_LOGIN_FORM_PAD : CSS_LOGIN_FORM_NOPAD;
                 out.println("  <table class='"+cssLoginFormTable+"' cellpadding='0' cellspacing='0' border='0'>");
-                form.put("class", cssLoginFormTable);
-
                 String focusFieldID = "";
-                
-                ArrayList<Object> fields= new ArrayList<Object>();
-                HashMap<String, Object> field;
-
-                
                 // account login field
                 if (acctLogin) {
-                    field= new HashMap<String, Object>();
-                   field.put("label", i18n.getString("AccountLogin.account","Account:"));
-
                     String fldID = "accountLoginField";
                     out.print("  <tr><td class='accountLoginFieldLabel'>"+i18n.getString("AccountLogin.account","Account:")+"</td>");
                     out.print(      "<td class='accountLoginFieldValue'><input id='"+fldID+"' class='"+CommonServlet.CSS_TEXT_INPUT+"' type='text' "+ro+" name='"+Constants.PARM_ACCOUNT+"' value='"+accountID+"' size='24' maxlength='32'></td></tr>");
                     out.print("\n");
-                    field.put("id", fldID);
-                    field.put("class", CommonServlet.CSS_TEXT_INPUT);
-                    field.put("type", "text");
-                    field.put("ro", ro);
-                    field.put("name", Constants.PARM_ACCOUNT);
-                    field.put("value", accountID);
-                    field.put("size", "24");
-                    field.put("maxlength", "32");
-                    fields.add(field);
-
-
                     focusFieldID = fldID;
-                    form.put("focusFieldID", focusFieldID);
                 }
                 // user login field
                 if (userLogin && emailLogin) {
@@ -340,60 +302,21 @@ public class AccountLogin
                     out.print("  <tr><td class='accountLoginFieldLabel'>"+i18n.getString("AccountLogin.userEmail","User/EMail:")+"</td>");
                     out.print(      "<td class='accountLoginFieldValue'><input id='"+fldID+"' class='"+CommonServlet.CSS_TEXT_INPUT+"' type='text' "+ro+" name='"+Constants.PARM_USER+"' value='"+userID+"' size='30' maxlength='40'></td></tr>");
                     out.print("\n");
-                    field= new HashMap<String, Object>();
-                    field.put("label", i18n.getString("AccountLogin.userEmail","User/EMail:"));
-
-                    field.put("id", fldID);
-                    field.put("class", CommonServlet.CSS_TEXT_INPUT);
-                    field.put("type", "text");
-                    field.put("ro", ro);
-                    field.put("name", Constants.PARM_USER);
-                    field.put("value", userID);
-                    field.put("size", "30");
-                    field.put("maxlength", "40");
-                    fields.add(field);
-
-                    if (StringTools.isBlank(focusFieldID)) { focusFieldID = fldID;                     form.put("focusFieldID", focusFieldID); }
+                    if (StringTools.isBlank(focusFieldID)) { focusFieldID = fldID; }
                 } else
                 if (userLogin) {
                     String fldID = "userLoginField";
                     out.print("  <tr><td class='accountLoginFieldLabel'>"+i18n.getString("AccountLogin.user","User:")+"</td>");
                     out.print(      "<td class='accountLoginFieldValue'><input id='"+fldID+"' class='"+CommonServlet.CSS_TEXT_INPUT+"' type='text' "+ro+" name='"+Constants.PARM_USER+"' value='"+userID+"' size='24' maxlength='32'></td></tr>");
                     out.print("\n");
-                    field= new HashMap<String, Object>();
-                    field.put("label", i18n.getString("AccountLogin.user","User:"));
-
-                    field.put("id", fldID);
-                    field.put("class", CommonServlet.CSS_TEXT_INPUT);
-                    field.put("type", "text");
-                    field.put("ro", ro);
-                    field.put("name", Constants.PARM_USER);
-                    field.put("value", userID);
-                    field.put("size", "24");
-                    field.put("maxlength", "32");
-                    fields.add(field);
-
-                    if (StringTools.isBlank(focusFieldID)) { focusFieldID = fldID;                     form.put("focusFieldID", focusFieldID); }
+                    if (StringTools.isBlank(focusFieldID)) { focusFieldID = fldID; }
                 } else
                 if (emailLogin) {
                     String fldID = "emailLoginField";
                     out.print("  <tr><td class='accountLoginFieldLabel'>"+i18n.getString("AccountLogin.email","EMail:")+"</td>");
                     out.print(      "<td class='accountLoginFieldValue'><input id='"+fldID+"' class='"+CommonServlet.CSS_TEXT_INPUT+"' type='text' "+ro+" name='"+Constants.PARM_USEREMAIL+"' value='"+userID+"' size='30' maxlength='40'></td></tr>");
                     out.print("\n");
-                    field= new HashMap<String, Object>();
-                    field.put("label", i18n.getString("AccountLogin.email","EMail:"));
-
-                    field.put("id", fldID);
-                    field.put("class", CommonServlet.CSS_TEXT_INPUT);
-                    field.put("type", "text");
-                    field.put("ro", ro);
-                    field.put("name", Constants.PARM_USEREMAIL);
-                    field.put("value", userID);
-                    field.put("size", "30");
-                    field.put("maxlength", "40");
-                    fields.add(field);
-
-                    if (StringTools.isBlank(focusFieldID)) { focusFieldID = fldID;                     form.put("focusFieldID", focusFieldID); }
+                    if (StringTools.isBlank(focusFieldID)) { focusFieldID = fldID; }
                 }
                 // password field
                 if (showPasswd) {
@@ -401,22 +324,9 @@ public class AccountLogin
                     out.print(    "<td class='accountLoginFieldLabel'>"+i18n.getString("AccountLogin.password","Password:")+"</td>");
                     out.print(    "<td class='accountLoginFieldValue'><input class='"+CommonServlet.CSS_TEXT_INPUT+"' type='password' "+ro+" name='"+Constants.PARM_PASSWORD+"' value='' size='24' maxlength='32'></td>");
                     out.print(  "</tr>\n");
-                    field= new HashMap<String, Object>();
-                    field.put("label",i18n.getString("AccountLogin.password","Password:"));
-
-                    field.put("id", "");
-                    field.put("class", CommonServlet.CSS_TEXT_INPUT);
-                    field.put("type", "password");
-                    field.put("ro", ro);
-                    field.put("name", Constants.PARM_PASSWORD);
-                    field.put("value", "");
-                    field.put("size", "24");
-                    field.put("maxlength", "32");
-                    fields.add(field);
-
                 }
                 // language selection
-                if (true) {
+                if (showLocale) {
                     String dftLocale = privLabel.getLocaleString();
                     Map<String,String> localeMap = BasicPrivateLabel.GetSupportedLocaleMap(privLabel.getLocale());
                     ComboMap comboLocaleMap = new ComboMap(localeMap);
@@ -426,44 +336,19 @@ public class AccountLogin
                     out.write(      Form_ComboBox(CommonServlet.PARM_LOCALE, CommonServlet.PARM_LOCALE, true, comboLocaleMap, dftLocale, null/*onchange*/));
                     out.print(    "</td>");
                     out.print(  "</tr>\n");
-                    field= new HashMap<String , Object>();
-                    field.put("label",i18n.getString("AccountLogin.language","Language:"));
-
-                    field.put("id", CommonServlet.PARM_LOCALE);
-                    field.put("class", CommonServlet.CSS_ADMIN_COMBO_BOX);
-                    field.put("type", "combobox");
-                    field.put("ro", ro);
-                    field.put("option", localeMap);
-                    fields.add(field);
-
-      
-                    
                 }
                 // end table
                 out.print("</table>\n");
                 // Login
                 out.print("<br>");
                 out.print("<input type='submit' name='submit' value='"+i18n.getString("AccountLogin.login","Login")+"'>\n");
-                field= new HashMap<String, Object>();
-           //     field.put("label",i18n.getString("AccountLogin.language","Language:"));
-                
-            //    field.put("id", CommonServlet.PARM_LOCALE);
-                field.put("class", CommonServlet.CSS_ADMIN_COMBO_BOX);
-                field.put("type", "submit");
-                field.put("name", "submit");
-                field.put("value", i18n.getString("AccountLogin.login","Login"));
-
-                fields.add(field);                // forgot password
+                // forgot password
                 if (showPasswd && (forgotURL != null)) {
                    if (legacy) { out.println("<br>"); }
                    out.println("  <span style='font-size:8pt;padding-left:10px;'><i><a href='"+forgotURL+"'>"+i18n.getString("AccountLogin.forgotPassword","Forgot your password?")+"</a></i></span>");
                 }
-                
-                form.put("fields", fields);
-
                 // end forn
                 out.println("</form>");
-                base.put("form", form);
                 // "Cookies/JavaScript must be enabled"
                 out.println("<br/>");
                 out.println("<span style='font-size:8pt'><i>"+i18n.getString("AccountLogin.cookiesJavaScript","(Cookies and JavaScript must be enabled)")+"</i></span>");
@@ -493,7 +378,6 @@ public class AccountLogin
                 
                 /* set focus */
                 if (!StringTools.isBlank(focusFieldID)) {
-                   
                     out.write("<script type=\"text/javascript\">\n");
                     out.write("var loginFocusField = document.getElementById('"+focusFieldID+"');\n");
                     out.write("if (loginFocusField) {\n");
@@ -501,12 +385,7 @@ public class AccountLogin
                     out.write("    loginFocusField.select();\n");
                     out.write("}\n");
                     out.write("</script>\n");
-
                 }
-                
-                
-                req.setAttribute("template", "AccountLogin.jsp");
-                req.setAttribute("data", new Serializer().json(base));
 
                 
             }
@@ -523,7 +402,259 @@ public class AccountLogin
             HTML_CONTENT);              // Content
 
     }
-
+    
+    
+    
     // ------------------------------------------------------------------------
 
+    public void writeJson(
+        final RequestProperties reqState,
+        String pageMsg)
+        throws IOException
+    {
+        final PrivateLabel privLabel = reqState.getPrivateLabel();
+        final I18N i18n = privLabel.getI18N(AccountLogin.class);
+      //final boolean legacy = this.getProperties().getBoolean(PROP_legacyLAF,false);
+        final boolean legacy = privLabel.getBooleanProperty(PrivateLabel.PROP_AccountLogin_legacyLAF,false);
+        final boolean borderedCss = legacy; // this.getProperties().getBoolean(PROP_boarderedLogin,true);
+        final String HR = legacy? "<hr>" : "<hr style='height: 5px;'/>";
+
+        /* Style */
+        HTMLOutput HTML_CSS = new HTMLOutput() {
+            public void write(PrintWriter out) throws IOException {
+                String cssDir = AccountLogin.this.getCssDirectory(); 
+                WebPageAdaptor.writeCssLink(out, reqState, "AccountLogin.css", cssDir);
+            }
+        };
+
+        /* write frame */
+        String cssAccountLogin[] = borderedCss? CSS_ACCOUNT_LOGIN_BORDER : CSS_ACCOUNT_LOGIN_NOBORD;
+        HTMLOutput HTML_CONTENT = new HTMLOutput(cssAccountLogin, pageMsg) {
+
+           public void write(PrintWriter out) throws IOException {
+               // baseURL
+               URIArg  baseURI    = MakeURL(RequestProperties.TRACK_BASE_URI(),null,null,null);
+               HttpServletRequest req = reqState.getHttpServletRequest();
+               String rtpArg      = (req != null)? req.getParameter(AttributeTools.ATTR_RTP) : null;
+               if (!StringTools.isBlank(rtpArg)) { baseURI.addArg(AttributeTools.ATTR_RTP,rtpArg); }
+               String  baseURL    = EncodeURL(reqState, baseURI);
+               String  accountID  = StringTools.trim(AccountRecord.getFilteredID(AttributeTools.getRequestString(req,Constants.PARM_ACCOUNT,"")));
+               String  userID     = StringTools.trim(AccountRecord.getFilteredID(AttributeTools.getRequestString(req,Constants.PARM_USER   ,"")));
+               // other args
+               String  newURL     = reqState.getPrivateLabel().hasWebPage(PAGE_ACCOUNT_NEW )? 
+                   //EncodeMakeURL(reqState,RequestProperties.TRACK_BASE_URI(),PAGE_ACCOUNT_NEW ) : null;
+                   privLabel.getWebPageURL(reqState,PAGE_ACCOUNT_NEW) : null;
+               String  forgotURL  = reqState.getPrivateLabel().hasWebPage(PAGE_PASSWD_EMAIL)? 
+                   //EncodeMakeURL(reqState,RequestProperties.TRACK_BASE_URI(),PAGE_PASSWD_EMAIL) : null;
+                   privLabel.getWebPageURL(reqState,PAGE_PASSWD_EMAIL) : null;
+               boolean acctLogin  = reqState.getPrivateLabel().getAccountLogin();
+               boolean userLogin  = reqState.getPrivateLabel().getUserLogin();
+               boolean emailLogin = reqState.getPrivateLabel().getAllowEmailLogin();
+               boolean showPasswd = reqState.getShowPassword();
+               boolean showLocale = privLabel.getBooleanProperty(PrivateLabel.PROP_AccountLogin_showLocaleSelection, false);
+               boolean showDemo   = reqState.getEnableDemo();
+               String  target     = "_self"; // reqState.getPageFrameContentOnly()? "_self" : "_top";  // target='_top'
+               boolean loginOK    = privLabel.getBooleanProperty(BasicPrivateLabelLoader.ATTR_allowLogin, true);
+               String  ro         = loginOK? "" : "readonly";
+              
+               String cssLoginContent = borderedCss? CSS_LOGIN_CONTENT_CENTER : CSS_LOGIN_CONTENT_LEFT;
+               HashMap<String , Object > base = new HashMap<String ,Object>();
+               base.put("cssLoginContent", cssLoginContent);
+               
+               
+               String vsepImg = legacy? null : AccountLogin.this.getProperties().getString(PROP_VSeparatorImage,null);
+               if (!StringTools.isBlank(vsepImg)) {
+                  HashMap<String , String> vsepMap= new HashMap<String , String>();
+                  
+                  base.put("vsepImg", vsepMap);
+                   String W = AccountLogin.this.getProperties().getString(PROP_VSeparatorImage_W,null);
+                   String H = AccountLogin.this.getProperties().getString(PROP_VSeparatorImage_H,null);
+                 
+                   vsepMap.put("src", vsepImg);
+                 
+               }
+
+               String cssLoginText = borderedCss? CSS_LOGIN_TEXT_CELL_CENTER : CSS_LOGIN_TEXT_CELL_LEFT;
+               base.put("cssLoginText", cssLoginText);
+               String enterLoginText = showPasswd?
+                   i18n.getString("AccountLogin.enterLogin","Enter your Login ID and Password") :
+                   i18n.getString("AccountLogin.enterLoginNoPass","Enter Login ID (No Password Required)");
+               base.put("enterLoginText", enterLoginText);
+               base.put("HR", HR);
+               HashMap<String,Object> form = new HashMap<String,Object>();
+               base.put("form", form);
+               form.put("name", FORM_LOGIN);
+               form.put("action", baseURL);
+               form.put("target", target);
+               String cssLoginFormTable = borderedCss? CSS_LOGIN_FORM_PAD : CSS_LOGIN_FORM_NOPAD;
+               form.put("class", cssLoginFormTable);
+
+               String focusFieldID = "";
+               
+               ArrayList<Object> fields= new ArrayList<Object>();
+               HashMap<String, Object> field;
+
+               
+               // account login field
+               if (acctLogin) {
+                   field= new HashMap<String, Object>();
+                  field.put("label", i18n.getString("AccountLogin.account","Account:"));
+
+                   String fldID = "accountLoginField";
+                   field.put("id", fldID);
+                   field.put("class", CommonServlet.CSS_TEXT_INPUT);
+                   field.put("type", "text");
+                   field.put("ro", ro);
+                   field.put("name", Constants.PARM_ACCOUNT);
+                   field.put("value", accountID);
+                   field.put("size", "24");
+                   field.put("maxlength", "32");
+                   fields.add(field);
+
+
+                   focusFieldID = fldID;
+                   form.put("focusFieldID", focusFieldID);
+               }
+               // user login field
+               if (userLogin && emailLogin) {
+                   String fldID = "userLoginField";
+                   field= new HashMap<String, Object>();
+                   field.put("label", i18n.getString("AccountLogin.userEmail","User/EMail:"));
+
+                   field.put("id", fldID);
+                   field.put("class", CommonServlet.CSS_TEXT_INPUT);
+                   field.put("type", "text");
+                   field.put("ro", ro);
+                   field.put("name", Constants.PARM_USER);
+                   field.put("value", userID);
+                   field.put("size", "30");
+                   field.put("maxlength", "40");
+                   fields.add(field);
+
+                   if (StringTools.isBlank(focusFieldID)) { focusFieldID = fldID;                     form.put("focusFieldID", focusFieldID); }
+               } else
+               if (userLogin) {
+                   String fldID = "userLoginField";
+                   field= new HashMap<String, Object>();
+                   field.put("label", i18n.getString("AccountLogin.user","User:"));
+
+                   field.put("id", fldID);
+                   field.put("class", CommonServlet.CSS_TEXT_INPUT);
+                   field.put("type", "text");
+                   field.put("ro", ro);
+                   field.put("name", Constants.PARM_USER);
+                   field.put("value", userID);
+                   field.put("size", "24");
+                   field.put("maxlength", "32");
+                   fields.add(field);
+
+                   if (StringTools.isBlank(focusFieldID)) { focusFieldID = fldID;                     form.put("focusFieldID", focusFieldID); }
+               } else
+               if (emailLogin) {
+                   String fldID = "emailLoginField";
+                   field= new HashMap<String, Object>();
+                   field.put("label", i18n.getString("AccountLogin.email","EMail:"));
+
+                   field.put("id", fldID);
+                   field.put("class", CommonServlet.CSS_TEXT_INPUT);
+                   field.put("type", "text");
+                   field.put("ro", ro);
+                   field.put("name", Constants.PARM_USEREMAIL);
+                   field.put("value", userID);
+                   field.put("size", "30");
+                   field.put("maxlength", "40");
+                   fields.add(field);
+
+                   if (StringTools.isBlank(focusFieldID)) { focusFieldID = fldID;                     form.put("focusFieldID", focusFieldID); }
+               }
+               // password field
+               if (showPasswd) {
+                   field= new HashMap<String, Object>();
+                   field.put("label",i18n.getString("AccountLogin.password","Password:"));
+
+                   field.put("id", "");
+                   field.put("class", CommonServlet.CSS_TEXT_INPUT);
+                   field.put("type", "password");
+                   field.put("ro", ro);
+                   field.put("name", Constants.PARM_PASSWORD);
+                   field.put("value", "");
+                   field.put("size", "24");
+                   field.put("maxlength", "32");
+                   fields.add(field);
+
+               }
+               // language selection
+               if (true) {
+                   String dftLocale = privLabel.getLocaleString();
+                   Map<String,String> localeMap = BasicPrivateLabel.GetSupportedLocaleMap(privLabel.getLocale());
+                   ComboMap comboLocaleMap = new ComboMap(localeMap);
+                   field= new HashMap<String , Object>();
+                   field.put("label",i18n.getString("AccountLogin.language","Language:"));
+
+                   field.put("id", CommonServlet.PARM_LOCALE);
+                   field.put("class", CommonServlet.CSS_ADMIN_COMBO_BOX);
+                   field.put("type", "combobox");
+                   field.put("ro", ro);
+                   field.put("option", localeMap);
+                   fields.add(field);
+
+     
+                   
+               }
+               // end table
+               // Login
+               field= new HashMap<String, Object>();
+          //     field.put("label",i18n.getString("AccountLogin.language","Language:"));
+               
+           //    field.put("id", CommonServlet.PARM_LOCALE);
+               field.put("class", CommonServlet.CSS_ADMIN_COMBO_BOX);
+               field.put("type", "submit");
+               field.put("name", "submit");
+               field.put("value", i18n.getString("AccountLogin.login","Login"));
+
+               fields.add(field);                // forgot password
+               if (showPasswd && (forgotURL != null)) {
+               }
+               
+               form.put("fields", fields);
+
+               // end forn
+               base.put("form", form);
+               // "Cookies/JavaScript must be enabled"
+               // demo
+               if (showDemo) {
+               }
+               // New Account
+               if (newURL != null) {
+               }
+               
+               /* set focus */
+               if (!StringTools.isBlank(focusFieldID)) {
+                  
+
+               }
+               
+               
+               req.setAttribute("template", "AccountLogin.jsp");
+               req.setAttribute("data", new Serializer().json(base));
+
+               
+           }
+           };
+
+        /* write frame */
+        String onload = (!StringTools.isBlank(pageMsg) && reqState._isLoginErrorAlert())? JS_alert(true,pageMsg) : null;
+        CommonServlet.writePageFrame(
+            reqState,
+            onload,null,                // onLoad/onUnload
+            HTML_CSS,                   // Style sheets
+            HTMLOutput.NOOP,            // JavaScript
+            null,                       // Navigation
+            HTML_CONTENT);              // Content
+
+    }
+
+    
+    
+    
 }

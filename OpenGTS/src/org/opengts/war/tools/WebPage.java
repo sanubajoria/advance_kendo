@@ -148,6 +148,12 @@ public interface WebPage
     public void writePage(RequestProperties reqState, String pageMsg)
         throws IOException;
     
+    
+    /* write the contents for this page to the 'response' output */
+    // connection state is available in 'reqState'
+    public void writeJson(RequestProperties reqState, String pageMsg)
+        throws IOException;
+    
     // ------------------------------------------------------------------------
 
 }

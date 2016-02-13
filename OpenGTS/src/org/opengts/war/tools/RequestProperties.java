@@ -217,6 +217,8 @@ public class RequestProperties
     private int                 enableDemo              = -1; // tri-state
     
     private boolean             encodeEmailHTML         = false;
+    
+    private boolean               isJson    = false;
 
     /* new ReguestProperties instance */
     public RequestProperties()
@@ -2831,6 +2833,18 @@ public class RequestProperties
             );
         }
     }
+
+   public boolean isJson()
+   {
+      return isJson;
+   }
+
+   public void setJson(boolean aIsJson)
+   {
+      isJson = aIsJson;
+   }
+    
+    
 
     // ------------------------------------------------------------------------
 

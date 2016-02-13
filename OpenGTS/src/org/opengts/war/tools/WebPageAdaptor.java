@@ -1503,4 +1503,13 @@ public abstract class WebPageAdaptor
 
     }
 
+   @Override
+   public void writeJson(RequestProperties aReqState, String aPageMsg) throws IOException
+   {
+      // TODO Auto-generated method stub
+      
+   }
+    
+    
+
 }

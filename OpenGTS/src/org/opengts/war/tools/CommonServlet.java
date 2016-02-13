@@ -46,6 +46,8 @@ public class CommonServlet
     public  static final String PARM_ARGUMENT                   = PARM_COMMAND + "_arg";
     public  static final String PARM_CONTENT                    = "co";
     public  static final String PARM_LOCALE                     = "locale";
+    public  static final String PARM_IS_JSON                   = "isjson";
+
 
     // ------------------------------------------------------------------------
     // overriding host properties keys

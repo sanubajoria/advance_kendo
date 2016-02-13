@@ -511,6 +511,7 @@ public class Track
         String pageName     = AttributeTools.getRequestString(request, CommonServlet.PARM_PAGE    , ""); // query only
         String cmdName      = AttributeTools.getRequestString(request, CommonServlet.PARM_COMMAND , ""); // query only ("page_cmd")
         String cmdArg       = AttributeTools.getRequestString(request, CommonServlet.PARM_ARGUMENT, ""); // query only
+        String isJson       = AttributeTools.getRequestString(request, CommonServlet.PARM_IS_JSON, "false"); // query only
 
         /* adjust page request */
         if (cmdName.equals(Constants.COMMAND_LOGOUT) || pageName.equals(PAGE_LOGIN)) {
@@ -660,6 +661,7 @@ public class Track
         reqState.setCommandName(cmdName);
         reqState.setCommandArg(cmdArg);
         reqState.setCookiesRequired(REQUIRE_COOKIES);  /* enable cookies? */
+        reqState.setJson(Boolean.parseBoolean(isJson));
 
         /* locale override */
         String localeStr = AttributeTools.getRequestString(request, Constants.PARM_LOCALE, null);           // query only
@@ -1746,7 +1748,11 @@ public class Track
 
         /* dispatch to page */
         reqState.setPageNavigationHTML(trackPage.getPageNavigationHTML(reqState));
-        trackPage.writePage(reqState, "");
+        //new code for json 
+        if(reqState.isJson())
+           trackPage.writeJson(reqState, "");
+        else
+           trackPage.writePage(reqState, "");
         return;
 
     }
@@ -1794,7 +1800,10 @@ public class Track
                 reqState._setLoginErrorAlert();
             }
             //Print.logInfo("Writing login page ... " + StringTools.className(loginPage));
-            loginPage.writePage(reqState, msg);
+            if(reqState.isJson())
+               loginPage.writeJson(reqState, msg);
+            else
+               loginPage.writePage(reqState, msg);
         } else {
             Print.logError("Login page '"+PAGE_LOGIN+"' not found!");
             I18N i18n = privLabel.getI18N(Track.class);
