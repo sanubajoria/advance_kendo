@@ -10,16 +10,43 @@
 package org.opengts.war.report.model;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class FormMap extends BaseMap
 {
-   ArrayList<FieldDetailMap> listOfFields = new ArrayList<FieldDetailMap>();
-   FormMap(){
+   
+  
+   ArrayList<Object> listOfFields = new ArrayList<Object>();
+   public FormMap(){
       setProperty("fields", listOfFields);
       
    }
 
-   public void addFiled(FieldDetailMap value)
+   public FormMap setName(String value)
+   {
+     setProperty("name", value);
+     return this;
+   }
+   
+   public FormMap setAction(String value)
+   {
+     setProperty("action", value);
+     return this;
+   }
+   
+   public FormMap setTarget(String value)
+   {
+     setProperty("target", value);
+     return this;
+   }
+   
+   public FormMap setClass(String value)
+   {
+     setProperty("class", value);
+     return this;
+   }
+   
+   public void addField(Object value)
    {
       listOfFields.add(value);
    }
@@ -27,6 +54,11 @@ public class FormMap extends BaseMap
    public void setColumnWidth(float value)
    {
      setProperty("columnWidth", value);
+   }
+   
+   public void setFocusId(String value)
+   {
+     setProperty("focusFieldID", value);
    }
  
 }

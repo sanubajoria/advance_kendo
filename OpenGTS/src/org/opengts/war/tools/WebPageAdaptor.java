@@ -46,7 +46,10 @@ import org.opengts.dbtools.*;
 import org.opengts.db.*;
 
 import org.opengts.war.tools.*;
+import org.opengts.war.track.Constants;
 import org.opengts.war.report.ReportPresentation;
+import org.opengts.war.report.model.FieldDetailMap;
+import org.opengts.war.report.model.FieldMap;
 
 public abstract class WebPageAdaptor
     implements WebPage
@@ -1510,6 +1513,33 @@ public abstract class WebPageAdaptor
       
    }
     
+   
+   
+   public static FieldDetailMap Form_TextField_Json(
+         String id, String name, boolean editable, 
+         String cssClass, String value, 
+         String type, 
+         int size, int maxLen, 
+         String defaultValue, String label, String ro  )
+     {
+      
+     
+         FieldDetailMap field= new FieldDetailMap();
+         field.setId(id);
+         field.setName(name);
+         field.setDefaultValue(defaultValue);
+         field.setSize(size);
+         field.setMaxSize(maxLen);
+         field.setClass(cssClass);
+         field.setRo(ro);
+         field.setLabel(label);
+         field.setType(type);
+         field.setEditable(editable);
+         
+        
+         /* return result */
+         return field;
+     }
     
 
 }

@@ -51,6 +51,8 @@ import org.opengts.util.*;
 import org.opengts.dbtools.*;
 import org.opengts.db.*;
 import org.opengts.db.tables.*;
+import org.opengts.war.report.model.FieldDetailMap;
+import org.opengts.war.report.model.FormMap;
 import org.opengts.war.report.model.Serializer;
 import org.opengts.war.tools.*;
 import org.opengts.war.track.*;
@@ -481,14 +483,12 @@ public class AccountLogin
                    i18n.getString("AccountLogin.enterLoginNoPass","Enter Login ID (No Password Required)");
                base.put("enterLoginText", enterLoginText);
                base.put("HR", HR);
-               HashMap<String,Object> form = new HashMap<String,Object>();
-               base.put("form", form);
-               form.put("name", FORM_LOGIN);
-               form.put("action", baseURL);
-               form.put("target", target);
                String cssLoginFormTable = borderedCss? CSS_LOGIN_FORM_PAD : CSS_LOGIN_FORM_NOPAD;
-               form.put("class", cssLoginFormTable);
 
+               FormMap form = new FormMap();
+             //  HashMap<String,Object> form = new HashMap<String,Object>();
+               base.put("form", form.getBasemap());
+               form.setName(FORM_LOGIN).setTarget(target).setAction(baseURL).setClass(cssLoginFormTable);
                String focusFieldID = "";
                
                ArrayList<Object> fields= new ArrayList<Object>();
@@ -497,112 +497,81 @@ public class AccountLogin
                
                // account login field
                if (acctLogin) {
-                   field= new HashMap<String, Object>();
-                  field.put("label", i18n.getString("AccountLogin.account","Account:"));
+                  String fldID = "accountLoginField";
 
-                   String fldID = "accountLoginField";
-                   field.put("id", fldID);
-                   field.put("class", CommonServlet.CSS_TEXT_INPUT);
-                   field.put("type", "text");
-                   field.put("ro", ro);
-                   field.put("name", Constants.PARM_ACCOUNT);
-                   field.put("value", accountID);
-                   field.put("size", "24");
-                   field.put("maxlength", "32");
-                   fields.add(field);
+                  FieldDetailMap fieldObj  =Form_TextField_Json(fldID, Constants.PARM_ACCOUNT, true, CommonServlet.CSS_TEXT_INPUT, accountID, "text", 24, 32, null, i18n.getString("AccountLogin.account","Account:"), ro);
+               
 
 
                    focusFieldID = fldID;
-                   form.put("focusFieldID", focusFieldID);
+                   form.setFocusId(focusFieldID);
+                   form.addField(fieldObj.getBasemap());
                }
                // user login field
                if (userLogin && emailLogin) {
                    String fldID = "userLoginField";
-                   field= new HashMap<String, Object>();
-                   field.put("label", i18n.getString("AccountLogin.userEmail","User/EMail:"));
+                   FieldDetailMap fieldObj  =Form_TextField_Json(fldID, Constants.PARM_USER, true,    // field id , name , editable 
+                         CommonServlet.CSS_TEXT_INPUT, userID,                                // css class , value
+                         "text", 30, 40, null,                                                // type , size , maxength
+                         i18n.getString("AccountLogin.userEmail","User/EMail:") , ro);        // label , ro
 
-                   field.put("id", fldID);
-                   field.put("class", CommonServlet.CSS_TEXT_INPUT);
-                   field.put("type", "text");
-                   field.put("ro", ro);
-                   field.put("name", Constants.PARM_USER);
-                   field.put("value", userID);
-                   field.put("size", "30");
-                   field.put("maxlength", "40");
-                   fields.add(field);
+                  form.addField(fieldObj.getBasemap());
 
-                   if (StringTools.isBlank(focusFieldID)) { focusFieldID = fldID;                     form.put("focusFieldID", focusFieldID); }
+                   if (StringTools.isBlank(focusFieldID)) { focusFieldID = fldID;             form.setFocusId(focusFieldID);}
                } else
                if (userLogin) {
                    String fldID = "userLoginField";
-                   field= new HashMap<String, Object>();
-                   field.put("label", i18n.getString("AccountLogin.user","User:"));
+                   FieldDetailMap fieldObj  =Form_TextField_Json(fldID, Constants.PARM_USER, true,    // field id , name , editable 
+                         CommonServlet.CSS_TEXT_INPUT, userID,                                // css class , value
+                         "text", 24, 32, null,                                                // type , size , maxength
+                         i18n.getString("AccountLogin.user","User:") , ro);                   // label , ro
 
-                   field.put("id", fldID);
-                   field.put("class", CommonServlet.CSS_TEXT_INPUT);
-                   field.put("type", "text");
-                   field.put("ro", ro);
-                   field.put("name", Constants.PARM_USER);
-                   field.put("value", userID);
-                   field.put("size", "24");
-                   field.put("maxlength", "32");
-                   fields.add(field);
+                  form.addField(fieldObj.getBasemap());
 
-                   if (StringTools.isBlank(focusFieldID)) { focusFieldID = fldID;                     form.put("focusFieldID", focusFieldID); }
+                   if (StringTools.isBlank(focusFieldID)) { focusFieldID = fldID;             form.setFocusId(focusFieldID);}
+                  
                } else
                if (emailLogin) {
                    String fldID = "emailLoginField";
-                   field= new HashMap<String, Object>();
-                   field.put("label", i18n.getString("AccountLogin.email","EMail:"));
+                   FieldDetailMap fieldObj  =Form_TextField_Json(fldID, Constants.PARM_USEREMAIL, true,    // field id , name , editable 
+                         CommonServlet.CSS_TEXT_INPUT, userID,                                // css class , value
+                         "text", 30, 40, null,                                                // type , size , maxength
+                         i18n.getString("AccountLogin.email","EMail:") , ro);                   // label , ro
 
-                   field.put("id", fldID);
-                   field.put("class", CommonServlet.CSS_TEXT_INPUT);
-                   field.put("type", "text");
-                   field.put("ro", ro);
-                   field.put("name", Constants.PARM_USEREMAIL);
-                   field.put("value", userID);
-                   field.put("size", "30");
-                   field.put("maxlength", "40");
-                   fields.add(field);
+                  form.addField(fieldObj.getBasemap());
 
-                   if (StringTools.isBlank(focusFieldID)) { focusFieldID = fldID;                     form.put("focusFieldID", focusFieldID); }
-               }
+                   if (StringTools.isBlank(focusFieldID)) { focusFieldID = fldID;             form.setFocusId(focusFieldID);}
+                                }
                // password field
                if (showPasswd) {
-                   field= new HashMap<String, Object>();
-                   field.put("label",i18n.getString("AccountLogin.password","Password:"));
+                  FieldDetailMap fieldObj  =Form_TextField_Json("", Constants.PARM_PASSWORD, true,    // field id , name , editable 
+                        CommonServlet.CSS_TEXT_INPUT, "",                                // css class , value
+                        "text", 24, 32, null,                                                // type , size , maxength
+                        i18n.getString("AccountLogin.password","Password:") , ro);                   // label , ro
 
-                   field.put("id", "");
-                   field.put("class", CommonServlet.CSS_TEXT_INPUT);
-                   field.put("type", "password");
-                   field.put("ro", ro);
-                   field.put("name", Constants.PARM_PASSWORD);
-                   field.put("value", "");
-                   field.put("size", "24");
-                   field.put("maxlength", "32");
-                   fields.add(field);
+                 form.addField(fieldObj.getBasemap());
+
 
                }
                // language selection
                if (true) {
-                   String dftLocale = privLabel.getLocaleString();
-                   Map<String,String> localeMap = BasicPrivateLabel.GetSupportedLocaleMap(privLabel.getLocale());
-                   ComboMap comboLocaleMap = new ComboMap(localeMap);
-                   field= new HashMap<String , Object>();
-                   field.put("label",i18n.getString("AccountLogin.language","Language:"));
+                  Map<String,String> localeMap = BasicPrivateLabel.GetSupportedLocaleMap(privLabel.getLocale());
 
-                   field.put("id", CommonServlet.PARM_LOCALE);
-                   field.put("class", CommonServlet.CSS_ADMIN_COMBO_BOX);
-                   field.put("type", "combobox");
-                   field.put("ro", ro);
-                   field.put("option", localeMap);
-                   fields.add(field);
+                  FieldDetailMap fieldObj  = Form_TextField_Json(CommonServlet.PARM_LOCALE, CommonServlet.PARM_LOCALE ,true,    // field id , name , editable 
+                        CommonServlet.CSS_ADMIN_COMBO_BOX, "",                                // css class , value
+                        "combobox", 24, 32, null,                                                // type , size , maxength
+                        i18n.getString("AccountLogin.language","Language:") , ro);                   // label , ro
+
+                 fieldObj.setProperty("option", localeMap);
+                 form.addField(fieldObj.getBasemap());
+                
 
      
                    
                }
                // end table
                // Login
+               FieldDetailMap fieldSubmit= new FieldDetailMap();
                field= new HashMap<String, Object>();
           //     field.put("label",i18n.getString("AccountLogin.language","Language:"));
                
@@ -612,14 +581,14 @@ public class AccountLogin
                field.put("name", "submit");
                field.put("value", i18n.getString("AccountLogin.login","Login"));
 
-               fields.add(field);                // forgot password
+               form.addField(field); 
+               // forgot password
                if (showPasswd && (forgotURL != null)) {
                }
                
-               form.put("fields", fields);
 
                // end forn
-               base.put("form", form);
+               base.put("form", form.getBasemap());
                // "Cookies/JavaScript must be enabled"
                // demo
                if (showDemo) {
@@ -637,6 +606,7 @@ public class AccountLogin
                
                req.setAttribute("template", "AccountLogin.jsp");
                req.setAttribute("data", new Serializer().json(base));
+           //    out.println("testing==="+new Serializer().json(base)); // testing
 
                
            }

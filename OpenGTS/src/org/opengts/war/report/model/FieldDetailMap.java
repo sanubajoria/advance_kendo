@@ -59,8 +59,23 @@ public class FieldDetailMap extends BaseMap
 
    }
    
+   public void setLabel(String value)
+   {
+     setProperty("label", value);
+   }
+   
    public void setCustomCssProperty(String value){
       setProperty("customcssproperty", value);
 
+   }
+   
+   public void setType(String value)
+   {
+     setProperty("type", value);
+   }
+   
+   public void setEditable(boolean value)
+   {
+     setProperty("editable", value);
    }
 }
