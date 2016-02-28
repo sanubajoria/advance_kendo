@@ -19,37 +19,49 @@ public class FieldDetailMap extends BaseMap
    
    
    
-   public void setId(String value)
+   public FieldDetailMap setId(String value)
    {
      setProperty("id", value);
+     return this;
+
    }
  
-   public void setClass(String value)
+   public FieldDetailMap setClass(String value)
    {
      setProperty("class", value);
+     return this;
+
    }
  
-   public void setName(String value)
+   public FieldDetailMap setName(String value)
    {
      setProperty("name", value);
+     return this;
+
    }
  
-   public void setValue(String value)
+   public FieldDetailMap setValue(String value)
    {
      setProperty("value", value);
+     return this;
+
    }
  
-   public void setDefaultValue(String value)
+   public FieldDetailMap setDefaultValue(String value)
    {
      setProperty("defaultvalue", value);
+     return this;
+
    }
  
-   public void setSize(int value)
+   public FieldDetailMap setSize(Integer value)
    {
      setProperty("size", value);
+     return this;
+
    }
  
-   public void setMaxSize(int value)
+   public void setMaxSize(Integer value)
    {
      setProperty("maxsize", value);
    }
@@ -59,9 +71,10 @@ public class FieldDetailMap extends BaseMap
 
    }
    
-   public void setLabel(String value)
+   public FieldDetailMap setLabel(String value)
    {
      setProperty("label", value);
+     return this;
    }
    
    public void setCustomCssProperty(String value){
@@ -69,13 +82,29 @@ public class FieldDetailMap extends BaseMap
 
    }
    
-   public void setType(String value)
+   public FieldDetailMap setType(String value)
    {
      setProperty("type", value);
+     return this;
+
    }
    
-   public void setEditable(boolean value)
+   public FieldDetailMap setEditable(boolean value)
    {
      setProperty("editable", value);
+     return this;
+   }
+   
+   public FieldDetailMap setTooltips(String value)
+   {
+     setProperty("tooltips", value);
+     return this;
+   }
+   
+   public FieldDetailMap setOnClick(String value)
+   {
+     setProperty("OnClick", value);
+     return this;
+
    }
 }

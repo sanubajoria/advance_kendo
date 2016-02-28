@@ -62,7 +62,12 @@ import org.opengts.dbtools.*;
 import org.opengts.db.*;
 import org.opengts.db.tables.*;
 import org.opengts.geocoder.GeocodeProvider;
-
+import org.opengts.war.report.model.Column;
+import org.opengts.war.report.model.FieldDetailMap;
+import org.opengts.war.report.model.FieldMap;
+import org.opengts.war.report.model.FormMap;
+import org.opengts.war.report.model.GridMap;
+import org.opengts.war.report.model.Serializer;
 import org.opengts.war.tools.*;
 import org.opengts.war.track.*;
 
@@ -784,57 +789,59 @@ public class ZoneInfo
 
                 // -- Geozone GlobalActive
                 boolean globalActive = Geozone.IsGlobalActive();
+                GridMap map = new GridMap();
 
                 if (_listZones) {
+                   
                     
                     // Geozone selection table (Select, Geozone ID, Zone Name)
                     String frameTitle = _allowEdit? 
                         i18n.getString("ZoneInfo.list.viewEditZone","View/Edit Geozone Information") : 
                         i18n.getString("ZoneInfo.list.viewZone","View Geozone Information");
-                    out.write("<span class='"+CommonServlet.CSS_MENU_TITLE+"'>"+frameTitle+"</span><br/>\n");
-                    out.write("<hr>\n");
+                        map.setTitle(frameTitle);
 
-                    // Geozone selection table (Select, Zone ID, Zone Name)
-                    out.write("<h1 class='"+CommonServlet.CSS_ADMIN_SELECT_TITLE+"'>"+FilterText(i18n.getString("ZoneInfo.list.selectZone","Select a Geozone"))+":</h1>\n");
-                    out.write("<div style='margin-left:25px;'>\n");
-                    out.write("<form name='"+FORM_ZONE_SELECT+"' method='post' action='"+selectURL+"' target='_self'>"); // target='_top'
-                    out.write("<input type='hidden' name='"+PARM_COMMAND+"' value='"+COMMAND_INFO_SELECT+"'/>");
-                    out.write("<table class='"+CommonServlet.CSS_ADMIN_SELECT_TABLE+"' cellspacing=0 cellpadding=0 border=0>\n");
-                    out.write(" <thead>\n");
-                    out.write("  <tr class='"+CommonServlet.CSS_ADMIN_TABLE_HEADER_ROW+"'>\n");
-                    out.write("   <th class='"+CommonServlet.CSS_ADMIN_TABLE_HEADER_COL_SEL+"'>"+FilterText(i18n.getString("ZoneInfo.list.select","Select"))+"</th>\n");
-                    out.write("   <th class='"+CommonServlet.CSS_ADMIN_TABLE_HEADER_COL    +"'>"+FilterText(i18n.getString("ZoneInfo.list.zoneID","Geozone ID"))+"</th>\n");
-                    out.write("   <th class='"+CommonServlet.CSS_ADMIN_TABLE_HEADER_COL    +"'>"+FilterText(i18n.getString("ZoneInfo.list.description","Description\n(Address)"))+"</th>\n");
-                    if (!globalActive) {
-                    out.write("   <th class='"+CommonServlet.CSS_ADMIN_TABLE_HEADER_COL    +"'>"+FilterText(i18n.getString("ZoneInfo.list.active","Active"))+"</th>\n");
-                    }
-                    if (showOverlapPriority) {
-                    out.write("   <th class='"+CommonServlet.CSS_ADMIN_TABLE_HEADER_COL    +"'>"+FilterText(i18n.getString("ZoneInfo.list.overlapPriority","Overlap\nPriority"))+"</th>\n");
-                    }
-                    out.write("   <th class='"+CommonServlet.CSS_ADMIN_TABLE_HEADER_COL    +"'>"+FilterText(i18n.getString("ZoneInfo.list.zoneType","Zone\nType"))+"</th>\n");
-                    if (showRevGeocodeZone) {
-                    out.write("   <th class='"+CommonServlet.CSS_ADMIN_TABLE_HEADER_COL    +"'>"+FilterText(i18n.getString("ZoneInfo.list.revGeocode","Reverse\nGeocode"))+"</th>\n");
-                    }
-                    if (showArriveDepartZone) {
-                    out.write("   <th class='"+CommonServlet.CSS_ADMIN_TABLE_HEADER_COL    +"'>"+FilterText(i18n.getString("ZoneInfo.list.arriveZone","Arrival\nZone"))+"</th>\n");
-                    out.write("   <th class='"+CommonServlet.CSS_ADMIN_TABLE_HEADER_COL    +"'>"+FilterText(i18n.getString("ZoneInfo.list.departZone","Departure\nZone"))+"</th>\n");
-                    }
-                    if (showClientUploadZone == 1) {
-                    out.write("   <th class='"+CommonServlet.CSS_ADMIN_TABLE_HEADER_COL    +"'>"+FilterText(i18n.getString("ZoneInfo.list.clientUpload","Client\nUpload"))+"</th>\n");
-                    } else
-                    if (showClientUploadZone == 2) {
-                    out.write("   <th class='"+CommonServlet.CSS_ADMIN_TABLE_HEADER_COL    +"'>"+FilterText(i18n.getString("ZoneInfo.list.clientUploadID","Client\nUpload ID"))+"</th>\n");
-                    }
-                    out.write("   <th class='"+CommonServlet.CSS_ADMIN_TABLE_HEADER_COL    +"'>"+FilterText(i18n.getString("ZoneInfo.list.radiusMeters","Radius\n(meters)"))+"</th>\n");
-                    out.write("   <th class='"+CommonServlet.CSS_ADMIN_TABLE_HEADER_COL    +"'>"+FilterText(i18n.getString("ZoneInfo.list.centerPoint","Center\nLatitude/Longitude"))+"</th>\n");
-                    out.write("  </tr>\n");
-                    out.write(" </thead>\n");
+                  //  out.write("<span class='"+CommonServlet.CSS_MENU_TITLE+"'>"+frameTitle+"</span><br/>\n");
+                  //  out.write("<hr>\n");
+
+                        FormMap selectform= new FormMap();
+                        selectform.setName(FORM_ZONE_SELECT).setTarget("_self").setAction(selectURL);
+                        
+                        FieldDetailMap hiddenField= new FieldDetailMap();
+                        hiddenField.setType("hidden").setName(PARM_COMMAND).setValue(COMMAND_INFO_SELECT);
+                        selectform.addField(hiddenField);
+                        map.addColumns(new Column(i18n.getString("ZoneInfo.list.select","Select")).setName("Select"));
+                        map.addColumns(new Column(i18n.getString("ZoneInfo.list.zoneID","Geozone ID")).setName(Geozone.FLD_geozoneID));
+                        map.addColumns(new Column(i18n.getString("ZoneInfo.list.description","Description\n(Address)")).setName(Geozone.FLD_description));
+                        if (!globalActive) {
+                           map.addColumns(new Column(i18n.getString("ZoneInfo.list.active","Active")).setName(Geozone.FLD_isActive));
+                        }
+                        if (showOverlapPriority) {
+                           map.addColumns(new Column(i18n.getString("ZoneInfo.list.overlapPriority","Overlap\nPriority")).setName(Geozone.FLD_priority));
+                        }
+                        map.addColumns(new Column(i18n.getString("ZoneInfo.list.zoneType","Zone\nType")).setName(Geozone.FLD_zoneType));
+                        if (showRevGeocodeZone) {
+                           map.addColumns(new Column(i18n.getString("ZoneInfo.list.revGeocode","Reverse\nGeocode")).setName(Geozone.FLD_reverseGeocode));
+                        }
+                        
+                        if (showArriveDepartZone) {
+                           map.addColumns(new Column(i18n.getString("ZoneInfo.list.arriveZone","Arrival\nZone")).setName(Geozone.FLD_arrivalZone));
+                           map.addColumns(new Column(i18n.getString("ZoneInfo.list.departZone","Departure\nZone")).setName(Geozone.FLD_departureZone));
+                        }
+                        if (showClientUploadZone == 1) {
+                           map.addColumns(new Column(i18n.getString("ZoneInfo.list.clientUpload","Client\nUpload")).setName(Geozone.FLD_clientUpload));
+                        }else if (showClientUploadZone == 2) {
+                           map.addColumns(new Column(i18n.getString("ZoneInfo.list.clientUploadID","Client\nUpload ID")).setName(Geozone.FLD_clientID));
+                           }
+                        map.addColumns(new Column(i18n.getString("ZoneInfo.list.radiusMeters","Radius\n(meters)")).setName(Geozone.FLD_radius));
+                        map.addColumns(new Column(i18n.getString("ZoneInfo.list.centerPoint","Center\nLatitude/Longitude")).setName("CenterPoint"));
+
+                        map.setProperty("form", selectform.getBasemap());
                     
-                    /* geozone list */
-                    out.write(" <tbody>\n");
+             
                     int pointRadiusType  = Geozone.GeozoneType.POINT_RADIUS.getIntValue();
                     int polygonType      = Geozone.GeozoneType.POLYGON.getIntValue();
                     int corridorType     = Geozone.GeozoneType.SWEPT_POINT_RADIUS.getIntValue();
+                    ArrayList<Object> rowmap= new ArrayList<Object>();
                     for (int z = 0, r = 0; z < _zoneList.length; z++) {
 
                         /* get Geozone */
@@ -849,6 +856,10 @@ public class ZoneInfo
                         }
 
                         /* geozone vars */
+                        HashMap<String , String> colmap = new HashMap<String , String>();
+                       rowmap.add(colmap);
+                        
+                    
                         int     zoneTypeInt = zone.getZoneType();
                         boolean zoneIsPOI   = Geozone.isPointOfInterest(zone);
                         String  zoneID      = FilterText(zone.getGeozoneID());
@@ -863,6 +874,17 @@ public class ZoneInfo
                         String  checked     = _selZoneID.equals(zone.getGeozoneID())? "checked" : "";
                         String  styleClass  = ((r++ & 1) == 0)? CommonServlet.CSS_ADMIN_TABLE_BODY_ROW_ODD : CommonServlet.CSS_ADMIN_TABLE_BODY_ROW_EVEN;
 
+                        colmap.put(Geozone.FLD_zoneType, zoneTypeStr);
+                        colmap.put(Geozone.FLD_description, zoneDesc);
+                        colmap.put(Geozone.FLD_geozoneID, zoneID);
+                  
+            
+                        
+                        colmap.put(Geozone.FLD_radius, zoneRadius);
+                        colmap.put("CenterPoint", zoneCenter);
+                        
+                        
+                        
                         int pointCount     = ZoneInfo.getGeozoneSupportedPointCount(reqState, zoneTypeInt);
                         String typeColor   = (pointCount > 0)? "black" : "red";
 
@@ -876,78 +898,104 @@ public class ZoneInfo
                         } else {
                             out.write("&nbsp;"); // unrecognized type
                         }
-                        out.write(      "</td>\n");
-                        out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap><label for='"+zoneID+"'>"+zoneID+"</label></td>\n");
-                        out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap>"+zoneDesc+"</td>\n");
+                    //    out.write(      "</td>\n");
+                      //  out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap><label for='"+zoneID+"'>"+zoneID+"</label></td>\n");
+                     //   out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap>"+zoneDesc+"</td>\n");
                         if (!globalActive) {
                             out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap>"+zoneActive+"</td>\n");
+                            colmap.put(Geozone.FLD_isActive, zoneActive);
+
                         }
                         if (showOverlapPriority) {
                             String zonePriority = FilterText(!zoneIsPOI?String.valueOf(zone.getPriority()):"--");
-                            out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap>"+zonePriority+"</td>\n");
+                            colmap.put(Geozone.FLD_priority, zonePriority);
+
+                         //   out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap>"+zonePriority+"</td>\n");
                         }
-                        out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap style='color:"+typeColor+"'>"+zoneTypeStr+"</td>\n");
+                      //  out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap style='color:"+typeColor+"'>"+zoneTypeStr+"</td>\n");
                         if (showRevGeocodeZone) {
-                            out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap>"+zoneRevGeo+"</td>\n");
+                            //out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap>"+zoneRevGeo+"</td>\n");
+                            colmap.put(Geozone.FLD_reverseGeocode, zoneRevGeo);
+
                         }
                         if (showArriveDepartZone) {
                             String zoneArrNtfy  = FilterText(!zoneIsPOI?ComboOption.getYesNoText(locale,zone.getArrivalZone()):"--");
                             String zoneDepNtfy  = FilterText(!zoneIsPOI?ComboOption.getYesNoText(locale,zone.getDepartureZone()):"--");
-                            out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap>"+zoneArrNtfy+"</td>\n");
-                            out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap>"+zoneDepNtfy+"</td>\n");
+                            colmap.put(Geozone.FLD_arrivalZone, zoneArrNtfy);
+                            colmap.put(Geozone.FLD_departureZone, zoneDepNtfy);
+                           /* out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap>"+zoneArrNtfy+"</td>\n");
+                            out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap>"+zoneDepNtfy+"</td>\n");*/
                         }
                         if (showClientUploadZone == 1) {
                             String zoneUpload   = FilterText(!zoneIsPOI?ComboOption.getYesNoText(locale,zone.getClientUpload()||(zone.getClientID() > 0)):"--");
-                            out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap>"+zoneUpload+"</td>\n");
+                            colmap.put(Geozone.FLD_clientUpload, zoneUpload);
+
+                         //   out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap>"+zoneUpload+"</td>\n");
                         } else
                         if (showClientUploadZone == 2) {
                             String zoneUpldID   = (zone.getClientID() > 0)? String.valueOf(zone.getClientID()) : "--";
-                            out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap>"+zoneUpldID+"</td>\n");
+                            colmap.put(Geozone.FLD_clientID, zoneUpldID);
+
+                           // out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap>"+zoneUpldID+"</td>\n");
                         }
-                        out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap>"+zoneRadius+"</td>\n");
-                        out.write("   <td class='"+CommonServlet.CSS_ADMIN_TABLE_BODY_COL    +"' nowrap>"+zoneCenter+"</td>\n");
-                        out.write("  </tr>\n");
+                        map.setProperty("data", rowmap);
+                        
+                        out.write(new Serializer().json(map.getBasemap()));//testing
+                        
 
                     }
+                    
                     out.write(" </tbody>\n");
                     out.write("</table>\n");
                     out.write("<table cellpadding='0' cellspacing='0' border='0' style='width:95%; margin-top:5px; margin-left:5px; margin-bottom:5px;'>\n");
                     out.write("<tr>\n");
                     if (_allowView  ) { 
                         out.write("<td style='padding-left:5px;'>");
-                        out.write("<input type='submit' name='"+PARM_SUBMIT_VIEW+"' value='"+i18n.getString("ZoneInfo.list.view","View")+"'>");
-                        out.write("</td>\n"); 
+                        FieldDetailMap submitButton= new FieldDetailMap();
+                        submitButton.setType("submit").setName(PARM_SUBMIT_VIEW).setValue(i18n.getString("ZoneInfo.list.view","View"));
+                        map.setProperty("submitButton", submitButton.getBasemap());
+                      //  out.write("<input type='submit' name='"+PARM_SUBMIT_VIEW+"' value='"+i18n.getString("ZoneInfo.list.view","View")+"'>");
+                      //  out.write("</td>\n"); 
                     }
                     if (_allowEdit  ) { 
-                        out.write("<td style='padding-left:5px;'>");
-                        out.write("<input type='submit' name='"+PARM_SUBMIT_EDIT+"' value='"+i18n.getString("ZoneInfo.list.edit","Edit")+"'>");
-                        out.write("</td>\n"); 
+                      //  out.write("<td style='padding-left:5px;'>");
+                        FieldDetailMap editButton= new FieldDetailMap();
+                        editButton.setType("submit").setName(PARM_SUBMIT_EDIT).setValue(i18n.getString("ZoneInfo.list.edit","Edit"));
+                        map.setProperty("editButton", editButton.getBasemap());
+                     //   out.write("<input type='submit' name='"+PARM_SUBMIT_EDIT+"' value='"+i18n.getString("ZoneInfo.list.edit","Edit")+"'>");
+                    //    out.write("</td>\n"); 
                     }
                     out.write("<td style='width:100%; text-align:right; padding-right:10px;'>");
                     if (_allowDelete) { 
-                        out.write("<input type='submit' name='"+PARM_SUBMIT_DEL+"' value='"+i18n.getString("ZoneInfo.list.delete","Delete")+"' "+Onclick_ConfirmDelete(locale)+">");
-                    } else {
-                        out.write("&nbsp;"); 
-                    }
-                    out.write("</td>\n"); 
-                    out.write("</tr>\n");
-                    out.write("</table>\n");
-                    out.write("</form>\n");
-                    out.write("</div>\n");
-                    out.write("<hr>\n");
-
+                       FieldDetailMap deleteButton= new FieldDetailMap();
+                       deleteButton.setType("submit").setName(PARM_SUBMIT_DEL).setValue(i18n.getString("ZoneInfo.list.delete","Delete"));
+                       map.setProperty("deleteButton", deleteButton.getBasemap());
+                      //  out.write("<input type='submit' name='"+PARM_SUBMIT_DEL+"' value='"+i18n.getString("ZoneInfo.list.delete","Delete")+"' "+Onclick_ConfirmDelete(locale)+">");
+                    } 
                     /* new Geozone */
                     if (_allowNew) {
-                        out.write("<h1 class='"+CommonServlet.CSS_ADMIN_SELECT_TITLE+"'>"+FilterText(i18n.getString("ZoneInfo.list.createNewZone","Create a new Geozone"))+":</h1>\n");
-                        out.write("<div style='margin-top:5px; margin-left:5px; margin-bottom:5px;'>\n");
-                        out.write("<form name='"+FORM_ZONE_NEW+"' method='post' action='"+newURL+"' target='_self'>"); // target='_top'
-                        out.write(" <input type='hidden' name='"+PARM_COMMAND+"' value='"+COMMAND_INFO_NEW+"'/>");
-                        out.write(FilterText(i18n.getString("ZoneInfo.list.zoneID","Geozone ID"))+": <input type='text' class='"+CommonServlet.CSS_TEXT_INPUT+"' name='"+PARM_NEW_ID+"' value='' size='32' maxlength='32'>");
+
+                       FormMap form = new FormMap();
+                     //  HashMap<String,Object> form = new HashMap<String,Object>();
+                       map.setProperty("form", form.getBasemap());
+                       form.setName(FORM_ZONE_NEW).setTarget("_self").setAction(newURL);
+                       FieldDetailMap fieldObj = new FieldDetailMap();
+                       fieldObj.setName(PARM_COMMAND).setValue(COMMAND_INFO_NEW).setType("hidden");
+                       form.addField(fieldObj.getBasemap());
+                       fieldObj = new FieldDetailMap();
+                       fieldObj.setName(PARM_NEW_ID).setValue("").setType("text").setLabel(i18n.getString("ZoneInfo.list.zoneID","Geozone ID")).setSize(32).setMaxSize(32);
+                       form.addField(fieldObj.getBasemap());
+
+                        //out.write("<h1 class='"+CommonServlet.CSS_ADMIN_SELECT_TITLE+"'>"+FilterText(i18n.getString("ZoneInfo.list.createNewZone","Create a new Geozone"))+":</h1>\n");
+                        //out.write("<div style='margin-top:5px; margin-left:5px; margin-bottom:5px;'>\n");
+                        //out.write("<form name='"+FORM_ZONE_NEW+"' method='post' action='"+newURL+"' target='_self'>"); // target='_top'
+                        //out.write(" <input type='hidden' name='"+PARM_COMMAND+"' value='"+COMMAND_INFO_NEW+"'/>");
+                        //out.write(FilterText(i18n.getString("ZoneInfo.list.zoneID","Geozone ID"))+": <input type='text' class='"+CommonServlet.CSS_TEXT_INPUT+"' name='"+PARM_NEW_ID+"' value='' size='32' maxlength='32'>");
                         int polyPointCount = ZoneInfo.getGeozoneSupportedPointCount(reqState,polygonType );
                         int corrPointCount = ZoneInfo.getGeozoneSupportedPointCount(reqState,corridorType);
                         if ((polyPointCount > 0) || (corrPointCount > 0)) {
                             ComboMap zoneTypeList = new ComboMap();
-                            out.write("&nbsp;");
+                            //out.write("&nbsp;");
                             zoneTypeList.add(String.valueOf(pointRadiusType) , Geozone.GeozoneType.POINT_RADIUS.toString(locale));
                             if (polyPointCount > 0) {
                                 zoneTypeList.add(String.valueOf(polygonType) , Geozone.GeozoneType.POLYGON.toString(locale));
@@ -955,53 +1003,79 @@ public class ZoneInfo
                             if (corrPointCount > 0) {
                                 zoneTypeList.add(String.valueOf(corridorType), Geozone.GeozoneType.SWEPT_POINT_RADIUS.toString(locale));
                             }
-                            out.print(Form_ComboBox(PARM_NEW_TYPE,PARM_NEW_TYPE,true,zoneTypeList,"","", -1));
+                            //out.print(Form_ComboBox(PARM_NEW_TYPE,PARM_NEW_TYPE,true,zoneTypeList,"","", -1));
+                           fieldObj  =  new FieldDetailMap();
+                           fieldObj.setName(PARM_NEW_TYPE).setValue("").setType("combobox");
+                           fieldObj.setProperty("option", zoneTypeList);
+                           form.addField(fieldObj.getBasemap());
+                            
                         } else {
                             // only POINT_RADIUS supported
                         }
+                        
                         out.write("<br>\n");
-                        out.write(" <input type='submit' name='"+PARM_SUBMIT_NEW+"' value='"+i18n.getString("ZoneInfo.list.new","New")+"' style='margin-top:5px; margin-left:10px;'>\n");
-                        out.write("</form>\n");
+                        fieldObj  =  new FieldDetailMap();
+                        fieldObj.setName(PARM_NEW_TYPE).setValue(i18n.getString("ZoneInfo.list.new","New")).setType("submit");
+                        form.addField(fieldObj);
+                      //  out.write(" <input type='submit' name='"+PARM_SUBMIT_NEW+"' value='"+i18n.getString("ZoneInfo.list.new","New")+"' style='margin-top:5px; margin-left:10px;'>\n");
+                     //   out.write("</form>\n");
                         out.write("</div>\n");
                         out.write("<hr>\n");
                     }
 
                 } else {
-
                     // -- view/edit
+                   FormMap editForm = new FormMap();
+                   map.setProperty("form", editForm.getBasemap());
+
+                   editForm.setName(FORM_ZONE_EDIT).setTarget("_self").setAction(editURL);
+
+
                     int selZoneType = (_selZone != null)? _selZone.getZoneType() : Geozone.GeozoneType.POINT_RADIUS.getIntValue();
                     boolean selZoneIsPOI = Geozone.isPointOfInterest(_selZone); // false if _selZone is null
 
                     // -- begin form
-                    out.println("<form name='"+FORM_ZONE_EDIT+"' method='post' action='"+editURL+"' target='_self'>"); // target='_top'
+               //     out.println("<form name='"+FORM_ZONE_EDIT+"' method='post' action='"+editURL+"' target='_self'>"); // target='_top'
 
                     // -- Geozone view/edit form
                     out.write("<table cellspacing='0' cellpadding='0' border='0'><tr>\n");
                     out.write("<td nowrap>");
+                    FieldDetailMap fieldObj  =  new FieldDetailMap();
+                    fieldObj.setName(PARM_NEW_TYPE).setValue(i18n.getString("ZoneInfo.list.new","New")).setType("submit");
+                    editForm.addField(fieldObj);
                     String frameTitle = _editZone? 
                         i18n.getString("ZoneInfo.map.editZone","Edit Geozone") : 
                         i18n.getString("ZoneInfo.map.viewZone","View Geozone");
-                    out.print  ("<span style='font-size:9pt; font-weight:bold;'>"+frameTitle+" &nbsp;</span>");
-                    out.print  (Form_TextField(PARM_ZONE_SELECT, false, _selZoneID, 16, 20));
-                    out.write("</td>");
-                    out.write("<td nowrap style=\"width:100%; text-align:right;\">");
+                        map.setTitle(frameTitle);
+
+                  //  out.print  ("<span style='font-size:9pt; font-weight:bold;'>"+frameTitle+" &nbsp;</span>");
+                        
+                    editForm.addField(Form_TextField_Json(PARM_ZONE_SELECT, false, _selZoneID, "text",16, 20 , null ));
+                 //   out.write("</td>");
+                 //   out.write("<td nowrap style=\"width:100%; text-align:right;\">");
                     //out.println("<span style='width:100%;'>&nbsp;</span>");  <-- causes IE to NOT display the following description
                     String i18nAddressTooltip = i18n.getString("ZoneInfo.map.description.tooltip", "This description is used for custom reverse-geocoding");
-                    out.print  ("<span class='zoneDescription' style='width:100%;' title=\""+i18nAddressTooltip+"\">");
-                    out.print  ("<b>"+i18n.getString("ZoneInfo.map.description","Description (Address)")+"</b>:&nbsp;");
-                    out.print  (Form_TextField(PARM_ZONE_DESC, _editZone, (_selZone!=null)?_selZone.getDescription():"", 30, 64));
-                    out.println("</span>");
-                    out.write("</td>");
-                    out.write("</tr></table>");
+                  //  out.print  ("<span class='zoneDescription' style='width:100%;' title=\""+i18nAddressTooltip+"\">");
+                  //  out.print  ("<b>"+i18n.getString("ZoneInfo.map.description","Description (Address)")+"</b>:&nbsp;");
+                    editForm.addField(Form_TextField_Json(PARM_ZONE_DESC, _editZone, (_selZone!=null)?_selZone.getDescription():"","text", 30, 64, i18n.getString("ZoneInfo.map.description","Description (Address)") ,i18nAddressTooltip ));
+                   
+                   // out.println("</span>");
+                   // out.write("</td>");
+                   // out.write("</tr></table>");
 
                     //out.println("<br/>");
-                    out.println("<input type='hidden' name='"+PARM_COMMAND+"' value='"+COMMAND_INFO_UPDATE+"'/>");
+                    editForm.addField(Form_TextField_Json(PARM_COMMAND, true,COMMAND_INFO_UPDATE,"hidden", 30, 64, null ,null ));
 
-                    out.println("<table border='0' cellpadding='0' cellspacing='0' style='padding-top:3px'>"); // {
-                    out.println("<tr>");
+              //      out.println("<input type='hidden' name='"+PARM_COMMAND+"' value='"+COMMAND_INFO_UPDATE+"'/>");
+
+             //       out.println("<table border='0' cellpadding='0' cellspacing='0' style='padding-top:3px'>"); // {
+             //       out.println("<tr>");
 
                     /* map (controls on right) */
-                    MapDimension mapDim = (mapProvider != null)? mapProvider.getZoneDimension() : new MapDimension(0,0);
+                    
+                    
+                 /*   Later converted in json 
+                  *  MapDimension mapDim = (mapProvider != null)? mapProvider.getZoneDimension() : new MapDimension(0,0);
                     if (!mapControlsOnLeft) {
                         if (mapSupportsGeozones) {
                             out.println("<td style='width:"+mapDim.getWidth()+"px; height:"+mapDim.getHeight()+"px; padding-right:5px;'>");
@@ -1020,23 +1094,22 @@ public class ZoneInfo
                             out.println("</td>");
                         }
                     }
-
+*/
                     /* Geozone fields */
-                    out.println("<td valign='top' style='border-top: solid #CCCCCC 1px;'>");
+                  //  out.println("<td valign='top' style='border-top: solid #CCCCCC 1px;'>");
 
                     // -- active
                     if (!Geozone.IsGlobalActive()) {
                         String i18nActiveTooltip = i18n.getString("ZoneInfo.map.active.tooltip", "Select to enable/activate this Geozone");
-                        out.println("<div class='zoneCheckSelect' title=\""+i18nActiveTooltip+"\">");
-                        out.println(Form_CheckBox(PARM_ZONE_ACTIVE, PARM_ZONE_ACTIVE, _editZone, ((_selZone!=null) && _selZone.getIsActive()),null,null));
-                        out.println("<b><label for='"+PARM_ZONE_ACTIVE+"'>"+i18n.getString("ZoneInfo.map.active","Active")+"</label></b>");
-                        out.println("</div>");
+                    
+                        editForm.addField(Form_CheckBox_Json(PARM_ZONE_ACTIVE,PARM_ZONE_ACTIVE, _editZone,String.valueOf(((_selZone!=null) && _selZone.getIsActive())), i18n.getString("ZoneInfo.map.active","Active") , i18nActiveTooltip , null ));
+
+                      
                     }
 
                     // -- overlap priority
                     if (showOverlapPriority && !selZoneIsPOI) {
                         String i18nPriorityTooltip = i18n.getString("ZoneInfo.map.overlapPriority.tooltip", "Priority used when multiple Geozones overlap");
-                        out.println("<div class='zonePrioritySelect' title=\""+i18nPriorityTooltip+"\">");
                         int pri = (_selZone != null)? _selZone.getPriority() : 0;
                         if (pri < 0) {
                             pri = 0;
@@ -1046,9 +1119,7 @@ public class ZoneInfo
                         }
                         ComboMap priCombo = new ComboMap(OVERLAP_PRIORITY);
                         String priSel = OVERLAP_PRIORITY[pri];
-                        out.println("<b><label for='"+PARM_PRIORITY+"'>"+i18n.getString("ZoneInfo.map.overlapPriority","Overlap Priority")+": </label></b>");
-                        out.println(Form_ComboBox(PARM_PRIORITY, PARM_PRIORITY, _editZone, priCombo, priSel, null, 6));
-                        out.println("</div>");
+                        editForm.addField((Form_ComboBox_Json(PARM_PRIORITY, PARM_PRIORITY, _editZone, priCombo, priSel, null, 6 , i18n.getString("ZoneInfo.map.overlapPriority","Overlap Priority") ,i18nPriorityTooltip )));
                     }
 
                     // -- show assigned device group
@@ -1084,40 +1155,34 @@ public class ZoneInfo
                             ComboMap grpMap = new ComboMap(devGrps);
                             String selGrp = (_selZone!=null)? _selZone.getGroupID() : null;
                             if (StringTools.isBlank(selGrp)) { selGrp = DeviceGroup.DEVICE_GROUP_ALL; }
-                            out.println("<div class='zoneGroupSelect' title=\""+i18nGroupTooltip+"\">");
-                            out.println("<label for='"+PARM_GROUP_SELECT+"'><b>"+i18n.getString("ZoneInfo.assignGroup","Assign Group")+"</b></label>");
-                            out.println(Form_ComboBox(PARM_GROUP_SELECT, PARM_GROUP_SELECT, _editZone, grpMap, selGrp, null/*onchange*/));
-                            out.println("</div>");
+                               editForm.addField((Form_ComboBox_Json(PARM_PRIORITY, PARM_PRIORITY, _editZone, grpMap, selGrp, null, 6 , i18n.getString("ZoneInfo.assignGroup","Assign Group") ,i18nGroupTooltip )));
+
+                          
                         }
                     }
 
                     // -- reverse-geocode zone
                     if (showRevGeocodeZone && !selZoneIsPOI) {
                         String i18nRevGeoTooltip = i18n.getString("ZoneInfo.map.reverseGeocode.tooltip", "Select to use this zone for custom reverse-geocoding");
-                        out.println("<div class='zoneCheckSelect' title=\""+i18nRevGeoTooltip+"\">");
-                        out.println(Form_CheckBox(PARM_REV_GEOCODE, PARM_REV_GEOCODE, _editZone, ((_selZone!=null) && _selZone.getReverseGeocode()),null,null));
-                        out.println("<b><label for='"+PARM_REV_GEOCODE+"'>"+i18n.getString("ZoneInfo.map.reverseGeocode","Reverse Geocode")+"</label></b>");
-                        out.println("</div>");
+                       editForm.addField(Form_CheckBox_Json(PARM_REV_GEOCODE, PARM_REV_GEOCODE, _editZone, String.valueOf(((_selZone!=null) && _selZone.getReverseGeocode())),i18n.getString("ZoneInfo.map.reverseGeocode","Reverse Geocode"),i18nRevGeoTooltip , null));
                     }
 
                     // -- arrival zone
                     if (showArriveDepartZone && !selZoneIsPOI) {
                         String i18nArriveTooltip = i18n.getString("ZoneInfo.map.arrivalZone.tooltip", "Select to use this zone for 'Arrival' checking");
                         boolean checked = ((_selZone!=null) && _selZone.getArrivalZone())? true : false;
-                        out.println("<div class='zoneCheckSelect' title=\""+i18nArriveTooltip+"\">");
+                       // out.println("<div class='zoneCheckSelect' title=\""+i18nArriveTooltip+"\">");
                         if (showArriveDepartCode) {
                             int      sc  = (_selZone != null)? _selZone.getArrivalStatusCode() : StatusCodes.STATUS_GEOFENCE_ARRIVE;
                             String   sck = "0x" + StringTools.toHexString(sc,16);
                             ComboMap scm = ZoneInfo.getArrivalCodeComboMap(privLabel);
                             String   chg = _editZone? "javascript:document."+FORM_ZONE_EDIT+"."+PARM_ARRIVE_CODE+".disabled=!document."+FORM_ZONE_EDIT+"."+PARM_ARRIVE_NOTIFY+".checked;" : null;
-                            out.println(Form_CheckBox(PARM_ARRIVE_NOTIFY, PARM_ARRIVE_NOTIFY, _editZone, checked,null,chg));
-                            out.println("<b><label for='"+PARM_ARRIVE_NOTIFY+"'>"+i18n.getString("ZoneInfo.map.arrival","Arrive")+"</label></b>&nbsp; ");
-                            out.println(Form_ComboBox(PARM_ARRIVE_CODE, PARM_ARRIVE_CODE, _editZone && checked, scm, sck, null, 14));
+                          //  out.println(Form_CheckBox(PARM_ARRIVE_NOTIFY, PARM_ARRIVE_NOTIFY, _editZone, checked,null,chg));
+                          //  out.println("<b><label for='"+PARM_ARRIVE_NOTIFY+"'>"+i18n.getString("ZoneInfo.map.arrival","Arrive")+"</label></b>&nbsp; ");
+                            editForm.addField((Form_ComboBox_Json(PARM_ARRIVE_CODE, PARM_ARRIVE_CODE, _editZone && checked, scm, sck, chg, 14 ,i18n.getString("ZoneInfo.map.arrival","Arrive") ,i18nArriveTooltip )));
                         } else {
-                            out.println(Form_CheckBox(PARM_ARRIVE_NOTIFY, PARM_ARRIVE_NOTIFY, _editZone, checked,null,null));
-                            out.println("<b><label for='"+PARM_ARRIVE_NOTIFY+"'>"+i18n.getString("ZoneInfo.map.arrivalZone","Arrival Zone")+"</label></b>");
+                           editForm.addField(Form_CheckBox_Json(PARM_ARRIVE_NOTIFY, PARM_ARRIVE_NOTIFY, _editZone, String.valueOf(checked),i18n.getString("ZoneInfo.map.arrivalZone","Arrival Zone"),i18nArriveTooltip,null));
                         }
-                        out.println("</div>");
                     }
 
                     // -- departure zone
@@ -1130,11 +1195,11 @@ public class ZoneInfo
                             String   sck = "0x" + StringTools.toHexString(sc,16);
                             ComboMap scm = ZoneInfo.getDepartureCodeComboMap(privLabel);
                             String   chg = _editZone? "javascript:document."+FORM_ZONE_EDIT+"."+PARM_DEPART_CODE+".disabled=!document."+FORM_ZONE_EDIT+"."+PARM_DEPART_NOTIFY+".checked;" : null;
-                            out.println(Form_CheckBox(PARM_DEPART_NOTIFY, PARM_DEPART_NOTIFY, _editZone, checked,null,chg));
-                            out.println("<b><label for='"+PARM_DEPART_NOTIFY+"'>"+i18n.getString("ZoneInfo.map.departure","Depart")+"</label></b> ");
-                            out.println(Form_ComboBox(PARM_DEPART_CODE, PARM_DEPART_CODE, _editZone && checked, scm, sck, null, 14));
+                            editForm.addField(Form_CheckBox_Json(PARM_DEPART_NOTIFY, PARM_DEPART_NOTIFY, _editZone, String.valueOf(checked),null,null,chg));
+                           // out.println("<b><label for='"+PARM_DEPART_NOTIFY+"'>"+i18n.getString("ZoneInfo.map.departure","Depart")+"</label></b> ");
+                            editForm.addField((Form_ComboBox_Json(PARM_DEPART_CODE, PARM_DEPART_CODE, _editZone && checked, scm, sck, null, 14 ,i18n.getString("ZoneInfo.map.departure","Depart") ,i18nDepartTooltip)));
                         } else {
-                            out.println(Form_CheckBox(PARM_DEPART_NOTIFY, PARM_DEPART_NOTIFY, _editZone, checked,null,null));
+                           editForm.addField(Form_CheckBox_Json(PARM_DEPART_NOTIFY, PARM_DEPART_NOTIFY, _editZone, String.valueOf(checked),i18n.getString("ZoneInfo.map.departureZone","Departure Zone"),null ,null));
                             out.println("<b><label for='"+PARM_DEPART_NOTIFY+"'>"+i18n.getString("ZoneInfo.map.departureZone","Departure Zone")+"</label></b>");
                         }
                         out.println("</div>");
@@ -1144,7 +1209,7 @@ public class ZoneInfo
                     if (showArriveDepartZone && showAutoNotify && !selZoneIsPOI) {
                         String i18nAutoTooltip = i18n.getString("ZoneInfo.map.autoNotify.tooltip", "Select to automatically send notification on arrive/depart");
                         out.println("<div class='zoneCheckSelect' title=\""+i18nAutoTooltip+"\">");
-                        out.println(Form_CheckBox(PARM_AUTO_NOTIFY, PARM_AUTO_NOTIFY, _editZone, ((_selZone!=null) && _selZone.getAutoNotify()),null,null));
+                        editForm.addField(Form_CheckBox_Json(PARM_AUTO_NOTIFY, PARM_AUTO_NOTIFY, _editZone, String.valueOf(((_selZone!=null) && _selZone.getAutoNotify())),i18n.getString("ZoneInfo.map.autoNotify","Auto Notify"),i18nAutoTooltip,null));
                         out.println("<b><label for='"+PARM_AUTO_NOTIFY+"'>"+i18n.getString("ZoneInfo.map.autoNotify","Auto Notify")+"</label></b>");
                         out.println("</div>");
                     }
@@ -1154,12 +1219,13 @@ public class ZoneInfo
                         String i18nUploadTooltip = i18n.getString("ZoneInfo.map.clientUpload.tooltip", "Select to use for client-side geofence");
                         out.println("<div class='zoneCheckSelect' title=\""+i18nUploadTooltip+"\">");
                         if (showClientUploadZone == 1) {
-                            out.println(Form_CheckBox(PARM_CLIENT_UPLOAD, PARM_CLIENT_UPLOAD, _editZone, ((_selZone!=null) && _selZone.getClientUpload()),null,null));
+                           editForm.addField(Form_CheckBox_Json(PARM_CLIENT_UPLOAD, PARM_CLIENT_UPLOAD, _editZone,String.valueOf(((_selZone!=null) && _selZone.getClientUpload())),i18n.getString("ZoneInfo.map.clientUpload","Client Upload"),i18nUploadTooltip,null));
                             out.println("<b><label for='"+PARM_CLIENT_UPLOAD+"'>"+i18n.getString("ZoneInfo.map.clientUpload","Client Upload")+":</label></b>&nbsp;");
                         } else
                         if (showClientUploadZone == 2) {
+                           //later
                             out.println("<b>"+i18n.getString("ZoneInfo.map.clientUploadID","Client Upload ID")+":</b>&nbsp;");
-                            out.println(Form_TextField(PARM_CLIENT_ID, PARM_CLIENT_ID, _editZone, (_selZone!=null)?String.valueOf(_selZone.getClientID()):"", 5, 5));
+                            editForm.addField(Form_TextField_Json( PARM_CLIENT_ID, _editZone, (_selZone!=null)?String.valueOf(_selZone.getClientID()):"","text", 5, 5 , i18n.getString("ZoneInfo.map.clientUploadID","Client Upload ID")));
                         }
                         out.println("</div>");
                     }
@@ -1182,7 +1248,7 @@ public class ZoneInfo
                         String onchange = _editZone? "javascript:jsvZoneColor=document."+FORM_ZONE_EDIT+"."+PARM_ZONE_COLOR+".value;_zoneReset();" : null;
                         out.println("<div class='zoneColorSelect' title=\""+""+"\">");
                         out.println("<b><label for='"+PARM_ZONE_COLOR+"'>"+i18n.getString("ZoneInfo.map.shapeColor","Zone Color")+": </label></b>");
-                        out.println(Form_ComboBox(PARM_ZONE_COLOR, PARM_ZONE_COLOR, _editZone, colorCombo, color, onchange, 10));
+                        editForm.addField((Form_ComboBox_Json(PARM_ZONE_COLOR, PARM_ZONE_COLOR, _editZone, colorCombo, color, onchange, 10 , i18n.getString("ZoneInfo.map.shapeColor","Zone Color") , null)));
                         out.println("</div>");
                     }
 
@@ -1192,7 +1258,7 @@ public class ZoneInfo
                         String ppID = (_selZone != null)? _selZone.getIconName() : "";
                         out.println("<div class='zonePushpinSelect' title=\""+""+"\">");
                         out.println("<b><label for='"+PARM_ZONE_PUSHPIN+"'>"+i18n.getString("ZoneInfo.map.pushpin","Pushpin")+": </label></b>");
-                        out.println(Form_ComboBox(PARM_ZONE_PUSHPIN, PARM_ZONE_PUSHPIN, _editZone, ppCombo, ppID, null/*onchange*/, 12));
+                        editForm.addField((Form_ComboBox_Json(PARM_ZONE_PUSHPIN, PARM_ZONE_PUSHPIN, _editZone, ppCombo, ppID, null/*onchange*/, 12 , i18n.getString("ZoneInfo.map.pushpin","Pushpin"),null)));
                         out.println("</div>");
                     }
 
@@ -1205,10 +1271,13 @@ public class ZoneInfo
                             String.valueOf((long)minRad), String.valueOf((long)maxRad));
                         out.println("<div class='zoneRadius' title=\""+i18nRadiusTooltip+"\">");
                         out.print  ("<b>"+i18n.getString("ZoneInfo.map.radiusMeters","Radius (meters)")+":</b>&nbsp;");
-                        out.println(Form_TextField(MapProvider.ID_ZONE_RADIUS_M, PARM_ZONE_RADIUS, _editZone, (_selZone!=null)?String.valueOf(_selZone.getRadius()):"", 7, 7));
+                        //later
+                        editForm.addField(Form_TextField_Json(MapProvider.ID_ZONE_RADIUS_M, PARM_ZONE_RADIUS, _editZone, (_selZone!=null)?String.valueOf(_selZone.getRadius()):"","text", 7, 7 , i18n.getString("ZoneInfo.map.radiusMeters","Radius (meters)") ));
                         out.println("</div>");
                     } else {
-                        out.println("<input type='hidden' id='"+MapProvider.ID_ZONE_RADIUS_M+"' name='"+PARM_ZONE_RADIUS+"' value='0'/>");
+                       editForm.addField(Form_TextField_Json(MapProvider.ID_ZONE_RADIUS_M, PARM_ZONE_RADIUS, true, "0","hidden", 7, 7,null ));
+
+                       //("<input type='hidden' id='"+MapProvider.ID_ZONE_RADIUS_M+"' name='"+PARM_ZONE_RADIUS+"' value='0'/>");
                     }
 
                     out.println("<div class='zoneLatLon'>");
@@ -1216,7 +1285,10 @@ public class ZoneInfo
                     if (_editZone && mapSupportsGeozones) {
                         String i18nResetBtn = i18n.getString("ZoneInfo.map.reset","Reset Map");
                         String i18nResetTooltip = i18n.getString("ZoneInfo.map.reset.tooltip", "Click to update the map with the specified radius/latitude/longitude");
-                        out.print("<input class='formButton' type='button' name='reset' value='"+i18nResetBtn+"' title=\""+i18nResetTooltip+"\" onclick=\"javascript:_zoneReset();\">");
+                        FieldDetailMap button =Form_TextField_Json(null, null, false, "formButton", "reset", "button", null, null, null, i18nResetBtn, null);
+                        button.setTooltips(i18nResetTooltip);
+                        editForm.addField(button);
+                      //  out.print("<input class='formButton' type='button' name='reset' value='"+i18nResetBtn+"' title=\""+i18nResetTooltip+"\" onclick=\"javascript:_zoneReset();\">");
                     }
                     out.println("<br>");
                     out.println("<div style='height:200px; overflow-y:auto;'>"); // beginning of vertice list
@@ -1230,15 +1302,19 @@ public class ZoneInfo
                         // id='"+PARM_ZONE_INDEX+"'
                         if (pointCount > 1) {
                             String chk = (z == 0)? " checked" : "";
-                            out.println("<input type='radio'  name='"+PARM_ZONE_INDEX+"' value='" + z + "' "+chk+" onclick=\"javascript:_zonePointSelectionChanged("+z+")\"/>&nbsp;");
+                            editForm.addField(Form_TextField_Json(PARM_ZONE_INDEX, PARM_ZONE_INDEX, true, chk,"radio", null, null,null ) .setOnClick("javascript:_zonePointSelectionChanged("+z+")"));
+
+                           // out.println("<input type='radio'  name='"+PARM_ZONE_INDEX+"' value='" + z + "' "+chk+" onclick=\"javascript:_zonePointSelectionChanged("+z+")\"/>&nbsp;");
                             //                                                                                     onchange=
                         } else {
-                            out.println("<input type='hidden' name='"+PARM_ZONE_INDEX+"' value='" + z + "'/>");
+                           // out.println("<input type='hidden' name='"+PARM_ZONE_INDEX+"' value='" + z + "'/>");
+                            editForm.addField(Form_TextField_Json(PARM_ZONE_INDEX, PARM_ZONE_INDEX, true, String.valueOf(z),"hidden", null, null,null ));
+
                         }
                         String latCSS = _editZone? "zoneLatLonText" : "zoneLatLonText_ro";
                         String lonCSS = _editZone? "zoneLatLonText" : "zoneLatLonText_ro";
-                        out.println(Form_TextField(MapProviderAdapter.ID_ZONE_LATITUDE (z), PARM_ZONE_LATITUDE (z), _editZone, latStr, null,  7,  9, latCSS));
-                        out.println(Form_TextField(MapProviderAdapter.ID_ZONE_LONGITUDE(z), PARM_ZONE_LONGITUDE(z), _editZone, lonStr, null,  8, 10, lonCSS));
+                        editForm.addField(Form_TextField_Json(MapProviderAdapter.ID_ZONE_LATITUDE (z), PARM_ZONE_LATITUDE (z), _editZone, latStr, null,  7,  9, null).setClass(latCSS));
+                        editForm.addField(Form_TextField_Json(MapProviderAdapter.ID_ZONE_LONGITUDE(z), PARM_ZONE_LONGITUDE(z), _editZone, lonStr, null,  8, 10, null).setClass(lonCSS));
                         if ((z+1) < pointCount) { out.println("<br>"); }
                     }
                     out.println("</div>"); // end of vertice list
@@ -1250,7 +1326,7 @@ public class ZoneInfo
                         out.print("<hr>\n");
                         out.println("<div class='zoneSpeedLimit' title=\""+""+"\">");
                         out.println("<b>"+i18n.getString("ZoneInfo.speedLimit","Speed Limit ({0})",speedUnit.toString(locale))+":</b>");
-                        out.println(Form_TextField(PARM_SPEED_LIMIT, PARM_SPEED_LIMIT, _editZone, String.valueOf(speedLimit), 5, 5));
+                        editForm.addField(Form_TextField_Json(PARM_SPEED_LIMIT, PARM_SPEED_LIMIT, _editZone, String.valueOf(speedLimit),"text", 5, 5 ,i18n.getString("ZoneInfo.speedLimit","Speed Limit ({0})",speedUnit.toString(locale))));
                         out.println("</div>");
                     }
                     // Purpose
@@ -1264,9 +1340,9 @@ public class ZoneInfo
                         if (!ListTools.isEmpty(P)) {
                             ComboMap purpMap = new ComboMap(P);
                             if (!ListTools.contains(P,purpID)) { purpMap.add(purpID); }
-                            out.println(Form_ComboBox(PARM_PURPOSE_ID, PARM_PURPOSE_ID, _editZone, purpMap, purpID, null/*onchange*/));
+                            editForm.addField(Form_ComboBox_Json(PARM_PURPOSE_ID, PARM_PURPOSE_ID, _editZone, purpMap, purpID, null/*onchange*/ ,16, i18n.getString("ZoneInfo.purposeID","Purpose"),null));
                         } else {
-                            out.println(Form_TextField(PARM_PURPOSE_ID, PARM_PURPOSE_ID, _editZone, purpID, 16, 30));
+                            editForm.addField(Form_TextField_Json(PARM_PURPOSE_ID, PARM_PURPOSE_ID, _editZone, purpID,"text", 16, 30 , i18n.getString("ZoneInfo.purposeID","Purpose")));
                         }
                         out.println("</div>");
                     }
@@ -1277,7 +1353,7 @@ public class ZoneInfo
                         out.println("<div class='zoneCorridorID' title=\""+""+"\">");
                         out.println("<b>"+i18n.getString("ZoneInfo.corridorID","Corridor ID")+":</b>");
                         out.println("<br>");
-                        out.println(Form_TextField(PARM_CORRIDOR_ID, PARM_CORRIDOR_ID, _editZone, corrID, 24, 30));
+                        editForm.addField(Form_TextField_Json(PARM_CORRIDOR_ID, PARM_CORRIDOR_ID, _editZone, corrID, "text",24, 30 ,i18n.getString("ZoneInfo.corridorID","Corridor ID")));
                         out.println("</div>");
                     }
                     // "Center On Zip/Address"
@@ -1296,14 +1372,17 @@ public class ZoneInfo
                             String rgZipCode_text = "rgZipCode";
                             out.print("<hr>\n");
                           //out.print("<br>");
-                            out.print("<input class='formButton' type='button' name='tozip' value='"+i18nZipBtn+"' title=\""+i18nZipTooltip+"\" onclick=\"javascript:_zoneGotoAddr(jsmGetIDValue('"+rgZipCode_text+"'),'"+dftCountryCode+"');\">");
+                            editForm.addField(Form_TextField_Json(null, "tozip", false, "formButton", i18nZipBtn, "button", null, null, null, null, null).setTooltips(i18nZipTooltip).setOnClick("javascript:_zoneGotoAddr(jsmGetIDValue('"+rgZipCode_text+"'),'"+dftCountryCode+"');"));
+                          //  out.print("<input class='formButton' type='button' name='tozip' value='"+i18nZipBtn+"' title=\""+i18nZipTooltip+"\" onclick=\"javascript:_zoneGotoAddr(jsmGetIDValue('"+rgZipCode_text+"'),'"+dftCountryCode+"');\">");
                             out.print("<br>");
-                            out.println(Form_TextField(rgZipCode_text, rgZipCode_text, _editZone, "",  27, 60));
+                            editForm.addField(Form_TextField_Json(rgZipCode_text, rgZipCode_text, _editZone, "","text",  27, 60,null));
                         }
                     }
                     out.println("</div>");
 
-                    out.println("<hr>");
+                    
+                    //Instruction later on 
+                   /* out.println("<hr>");
                     out.println("<div class='zoneInstructions'>");
                     out.println("<b>"+i18n.getString("ZoneInfo.map.notes.header","Geozone Notes/Instructions")+":</b><br>");
                     if (_editZone && mapSupportsGeozones) {
@@ -1331,16 +1410,24 @@ public class ZoneInfo
                         out.println("<hr>");
                     }
 
-                    out.println("</div>");
+                    out.println("</div>");*/
 
-                    out.write("<div width='100%'>\n");
-                    out.write("<span style='padding-left:10px'>&nbsp;</span>\n");
+                  //  out.write("<div width='100%'>\n");
+                  //  out.write("<span style='padding-left:10px'>&nbsp;</span>\n");
                     if (_editZone) {
-                        out.write("<input type='submit' name='"+PARM_SUBMIT_CHG+"' value='"+i18n.getString("ZoneInfo.map.change","Change")+"'>\n");
+                       String change=i18n.getString("ZoneInfo.map.change","Change");
+                       editForm.addField(Form_TextField_Json(null, PARM_SUBMIT_CHG, true , null ,change , "submit", null, null, null, null, null));
+                        //out.write("<input type='submit' name='"+PARM_SUBMIT_CHG+"' value='"+i18n.getString("ZoneInfo.map.change","Change")+"'>\n");
                         out.write("<span style='padding-left:10px'>&nbsp;</span>\n");
-                        out.write("<input type='button' name='"+PARM_BUTTON_CANCEL+"' value='"+i18n.getString("ZoneInfo.map.cancel","Cancel")+"' onclick=\"javascript:openURL('"+editURL+"','_self');\">\n"); // target='_top'
+                        String cancel=i18n.getString("ZoneInfo.map.cancel","Cancel");
+                        editForm.addField(Form_TextField_Json(null, PARM_BUTTON_CANCEL, true , null ,cancel , "button", null, null, null, null, null).setOnClick("javascript:openURL('"+editURL+"','_self')"));
+
+                        //out.write("<input type='button' name='"+PARM_BUTTON_CANCEL+"' value='"+i18n.getString("ZoneInfo.map.cancel","Cancel")+"' onclick=\"javascript:openURL('"+editURL+"','_self');\">\n"); // target='_top'
                     } else {
-                        out.write("<input type='button' name='"+PARM_BUTTON_BACK+"' value='"+i18n.getString("ZoneInfo.map.back","Back")+"' onclick=\"javascript:openURL('"+editURL+"','_self');\">\n"); // target='_top'
+                       String backLabel=i18n.getString("ZoneInfo.map.back","Back");
+                       editForm.addField(Form_TextField_Json(null, PARM_BUTTON_BACK, true , null ,backLabel , "button", null, null, null, null, null).setOnClick("javascript:openURL('"+editURL+"','_self')"));
+
+                        //out.write("<input type='button' name='"+PARM_BUTTON_BACK+"' value='"+i18n.getString("ZoneInfo.map.back","Back")+"' onclick=\"javascript:openURL('"+editURL+"','_self');\">\n"); // target='_top'
                     }
                     out.write("</div>\n");
 
@@ -1351,7 +1438,7 @@ public class ZoneInfo
                     out.println("</td>");
 
                     /* map (controls on left) */
-                    if (mapControlsOnLeft) {
+                 /*   if (mapControlsOnLeft) {
                         if (mapSupportsGeozones) {
                             out.println("<td style='width:"+mapDim.getWidth()+"px; height:"+mapDim.getHeight()+"px; padding-left:5px;'>");
                             out.println("<!-- Begin Map -->");
@@ -1368,7 +1455,7 @@ public class ZoneInfo
                             out.println("</center>");
                             out.println("</td>");
                         }
-                    }
+                    }*/
 
                     /* end of form */
                     out.println("</tr>");

@@ -1519,7 +1519,7 @@ public abstract class WebPageAdaptor
          String id, String name, boolean editable, 
          String cssClass, String value, 
          String type, 
-         int size, int maxLen, 
+         Integer size, Integer maxLen, 
          String defaultValue, String label, String ro  )
      {
       
@@ -1541,5 +1541,92 @@ public abstract class WebPageAdaptor
          return field;
      }
     
+   
+   
+   
+   public static FieldDetailMap Form_TextField_Json(
+          String name, boolean editable, 
+          String value, 
+         String type, 
+         Integer size, Integer maxLen, 
+          String label  )
+     {
+      
+     return Form_TextField_Json(null, name, editable, null, value, type, size, maxLen, null, label, null);
+         
+         
+        
+         /* return result */
+       //  return field;
+     }
+    
+   
+   public static FieldDetailMap Form_TextField_Json( String id,
+         String name, boolean editable, 
+         String value, 
+        String type, 
+        Integer size, Integer maxLen, 
+         String label  )
+    {
+     
+    return Form_TextField_Json(id, name, editable, null, value, type, size, maxLen, null, label, null);
+        
+        
+       
+        /* return result */
+      //  return field;
+    }
+   
+   
+   public static FieldDetailMap Form_TextField_Json(
+         String name, boolean editable, 
+         String value, 
+        String type, 
+        Integer size, Integer maxLen, 
+         String label , String toolTips  )
+    {
+     
+      FieldDetailMap field= Form_TextField_Json(null, name, editable, null, value, type, size, maxLen, null, label, null);
+      field.setTooltips(toolTips);
+     // field.setProperty("tooltips", toolTips);
+      return field;
+        
+        
+       
+        /* return result */
+      //  return field;
+    }
+   
+   
+   public static FieldDetailMap Form_CheckBox_Json(String id, String name, boolean editable, String checked,String label, String tooltip, String onchange  )
+   {
+    //  FieldDetailMap field= Form_TextField_Json(id, name, editable, null, checked, "checkBox", null, null, null, null, tooltip);
+      FieldDetailMap field= new FieldDetailMap();
+      field.setId(id);
+      field.setName(name);
+      field.setLabel(label);
+      field.setType("checkBox");
+      field.setEditable(editable);
+      field.setValue(checked);
+      field.setProperty("tooltips", tooltip);
+      return field;
+
+   }
+   
+   public static FieldDetailMap Form_ComboBox_Json(String id, String key, boolean editable, ComboMap map, String selKey, String onchange, int size ,String label , String tooltip)
+   {
+      FieldDetailMap field= new FieldDetailMap();
+      field.setId(id);
+      field.setProperty("key", key);
+      field.setLabel(label);
+      field.setType("comboBox");
+      field.setEditable(editable);
+      field.setProperty("option", map);
+      field.setValue(selKey);
+      field.setProperty("tooltips", tooltip);
+      field.setSize(size);
+      return field;
+   }
+   
 
 }

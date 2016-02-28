@@ -3,7 +3,13 @@ package org.opengts.war.report.model;
 public class Column extends BaseMap {
 
 
-	  
+   public Column(String name){
+      setProperty("name", name);
+      setProperty("displayName", name);
+
+      
+
+   }
 	  
 	  public void setColumnHeaderTemplate(Object value)
 	  {
@@ -25,9 +31,10 @@ public class Column extends BaseMap {
 	
 	  
 	  
-	  public void setTitle(Object value)
+	  public Column setName(String value)
 	  {
-		  setProperty("title", value);
+		  setProperty("name", value);
+		  return this;
 	  }
 	  
 	  

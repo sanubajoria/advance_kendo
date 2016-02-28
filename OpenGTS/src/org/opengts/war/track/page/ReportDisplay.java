@@ -429,9 +429,9 @@ public class ReportDisplay
 
 				colField = bct.getFieldName();
 
-				Column colMap = new Column();
+				Column colMap = new Column("");
 				colMap.setField(colField);
-				colMap.setTitle(colTitle);
+				//colMap.setTitle(colTitle);
 				list.add(colMap.getBasemap());
 
 				/* display column header title */
@@ -442,13 +442,13 @@ public class ReportDisplay
             }
             
             
-		    grMap.setColumns(list);
+		    //grMap.setColumns(list);
 
             
             
             Serializer serializer= new Serializer();
             
-            grMap.setColumns(list);
+           // grMap.setColumns(list);
             
             DBDataIterator data = (report != null)? report.getBodyDataIterator() : null;
             if ((data != null) && data.hasNext()) {

@@ -1,11 +1,22 @@
 package org.opengts.war.report.model;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 public class GridMap extends BaseMap {
 	
+   ArrayList<Object> columns = new ArrayList<Object>();
+   public GridMap()
+   {
+      // TODO Auto-generated constructor stub
+      setProperty("columnDefs", columns);
+
+   }
 	
-	 public void setColumns(Object value)
+	 public void addColumns(Column value)
 	  {
-		  setProperty("columns", value);
+	    columns.add(value.getBasemap());
+		 // setProperty("columns", value);
 	  }
 	 
 	 public void setPageable(Object value)
@@ -37,4 +48,9 @@ public class GridMap extends BaseMap {
 	  {
 		  setProperty("columnResizeHandleWidth", value);
 	  }
+	 
+	 public void setTitle(Object value)
+    {
+       setProperty("title", value);
+    }
 }
